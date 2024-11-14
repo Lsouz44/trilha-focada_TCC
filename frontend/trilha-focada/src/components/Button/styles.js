@@ -9,15 +9,17 @@ export const Container = styled.button.attrs((props) => ({
   align-items: center;
   justify-content: center;
   gap: 0.625rem;
+  font-family: 'Baloo Bhai 2', serif;
 
-  background-color: ${({ theme, $opacity }) =>
-    $opacity ? theme.COLORS.BLUE : theme.COLORS.WHITE};
+  background: ${({ theme, $opacity }) =>
+    $opacity ? `linear-gradient(${theme.COLORS.BLUE_LIGHT}, ${theme.COLORS.BLUE})` : theme.COLORS.WHITE};
   border: none;
   border-radius: 0.625rem;
 
   color: ${({ theme, $opacity }) =>
     $opacity ? theme.COLORS.WHITE : theme.COLORS.BLUE};
-  font-size: 1rem;
+  font-size: 1.2rem;
+  font-weight: 500;
   text-transform: uppercase;
 
   cursor: pointer;
@@ -30,11 +32,11 @@ export const Container = styled.button.attrs((props) => ({
   }
 
   &:hover {
-    background-color: ${({ theme }) => theme.COLORS.RED_WHITE};
+    background: ${({ theme }) => `linear-gradient(${theme.COLORS.BLUE_LIGHT}, ${theme.COLORS.BLUE_LIGHT2})`};
   }
 
   &:disabled {
-    background-color: ${({ theme }) => theme.COLORS.RED_WHITE};
+    background: ${({ theme }) => theme.COLORS.GRAY_LIGHT};
     color: ${({ theme }) => theme.COLORS.WHITE};
     cursor: not-allowed;
   }
@@ -65,10 +67,10 @@ export const Container = styled.button.attrs((props) => ({
 
   &.green {
     margin: 0;
-    background-color: ${({ theme }) => theme.COLORS.GREEN_200};
+    background: ${({ theme }) => `linear-gradient(${theme.COLORS.GREEN}, ${theme.COLORS.GREEN_DARK})`};
 
     &:hover {
-      background-color: ${({ theme }) => theme.COLORS.GREEN_WHITE};
+      background: ${({ theme }) => `linear-gradient(${theme.COLORS.GREEN_LIGHT}, ${theme.COLORS.GREEN})`};
     }
   }
 

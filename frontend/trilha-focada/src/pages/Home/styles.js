@@ -10,4 +10,10 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+
+.activity-section {
+  margin-bottom: 510px;
+  margin-right: 1000px;
+}
 `

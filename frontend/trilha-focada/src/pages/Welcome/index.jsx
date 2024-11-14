@@ -17,7 +17,7 @@ export function Welcome() {
             <GlobalStyle />
             <Container>
                 <Content>
-                    <img src={logo} alt="Logo com escrito bem vindo e folhas." />
+                    <img src={logo} alt="Logo Trilha Focada." />
 
                     <Button title="Entrar" onClick={handleLogin} />
                     <p>

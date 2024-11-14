@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import * as yup from 'yup';
 import Axios from 'axios';
 
-import { Container, Title, Form, FormGroup, FormField, FormError } from './styles';
+import { Container, Title, Form, FormGroup, FormField, FormError, Label } from './styles';
 import { Button } from '../../components/Button';
 
 export function SignIn() {
@@ -19,10 +19,19 @@ export function SignIn() {
             email: values.email,
             password: values.password,
           }).then((response) => {
-            handleHome()
+            if (response.data.result === true){
+              const { token } = response.data;
+              localStorage.setItem('token', token);
+              handleHome();
+            } else {
+              console.log("LOGIN NÃO REALIZADO");
+            }
+            alert(response.data.msg);
             console.log(response);
+          }).catch((error) => {
+            console.error("Erro ao cadastrar atividade:", error);
           });
-        };
+        }
       
         const validationLogin = yup.object().shape({
           email: yup
@@ -45,9 +54,9 @@ export function SignIn() {
             <Form>
     
                 <FormGroup>
-    
+                    <Label htmlFor='senha'>Email: </Label>
                     <FormField name="email"
-                    placeholder="Email" />
+                    placeholder="exemplo@email.com" />
         
                     <FormError component="span"
                     name="email" />
@@ -55,10 +64,10 @@ export function SignIn() {
                 </FormGroup>
     
                 <FormGroup>
-    
+
+                    <Label htmlFor='senha'>Senha: </Label>
                     <FormField name="password"
-                    type="password"
-                    placeholder="Password" />
+                    type="password" />
         
                     <FormError component="span"
                     name="password" />
