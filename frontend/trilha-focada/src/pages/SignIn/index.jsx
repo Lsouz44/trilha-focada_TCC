@@ -2,9 +2,9 @@ import { Formik } from 'formik';
 import { useNavigate } from "react-router-dom"
 import * as yup from 'yup';
 import Axios from 'axios';
-
 import { Container, Title, Form, FormGroup, FormField, FormError, Label } from './styles';
 import { Button } from '../../components/Button';
+import logo from "../../assets/logo/logo_trilhafocada.png";
 
 export function SignIn() {
 
@@ -44,7 +44,9 @@ export function SignIn() {
         });
 
     return (
+      
         <Container>
+          
             <Title>Login</Title>
             <Formik
             initialValues={{}}
@@ -77,7 +79,11 @@ export function SignIn() {
                 <Button title="Login"
                 className="login-button"
                 type="submit" $opacity />
-    
+                <span>Não tem uma conta?</span>
+                 <Button title="Criar Cpmta"
+                className="login-button"
+                type="submit" $opacity />
+               
             </Form>
     
             </Formik>

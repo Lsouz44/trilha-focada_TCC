@@ -3,7 +3,7 @@ import styled from "styled-components"
 export const Container = styled.button.attrs((props) => ({
   className: props.className,
 }))`
-  width: 100%;
+  width: 70%;
   padding: 0.9375rem 5rem;
   display: flex;
   align-items: center;
@@ -45,6 +45,7 @@ export const Container = styled.button.attrs((props) => ({
   max-height: 40px;
   margin-top: 20px;
   padding: 5px 40px;
+  
   }
 
   &.inline-button {

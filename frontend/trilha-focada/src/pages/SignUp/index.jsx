@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import * as yup from 'yup';
 import Axios from 'axios';
 
-import { Container, Title, Form, FormGroup, FormField, FormError } from './styles';
+import { Container, Title, Form, FormGroup, FormField, FormError,Label } from './styles';
 import { Button } from '../../components/Button';
 import React from 'react';
 
@@ -51,6 +51,7 @@ export function SignUp() {
   });
   
   return (
+    <div className=''>
       <Container>
       <Title>Crie sua conta</Title>
       <Formik
@@ -138,5 +139,6 @@ export function SignUp() {
       </Formik>
 
     </ Container>
+    </div>
   )
 }
