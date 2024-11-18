@@ -19,12 +19,10 @@ export function Header({
 }) {
   const headerRef = useRef(null)
 
-//   const { user } = useAuth()
-
   const navigate = useNavigate()
 
   function handleGoHome() {
-    navigate("/")
+    navigate("/home")
     window.scrollTo(0, 0)
   }
 
@@ -48,9 +46,6 @@ export function Header({
       />
       <Nav>
         <ul>
-          <li>
-            <Link> </Link>
-          </li>
           <li>
             <ButtonText
               icon={TiHome}

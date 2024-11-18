@@ -47,6 +47,16 @@ export const Container = styled.button.attrs((props) => ({
   padding: 5px 40px;
   }
 
+  &.newactivity-button {
+  max-height: 50px;
+  margin-top: 20px;
+  padding: 5px 40px;
+  }
+
+  &.register-newactivity{
+    padding: 0px 40px;
+  }
+
   &.inline-button {
     width: auto;
     padding: 0.9375rem 1.25rem;

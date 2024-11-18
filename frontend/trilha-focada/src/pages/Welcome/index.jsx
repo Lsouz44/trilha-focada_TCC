@@ -19,7 +19,7 @@ export function Welcome() {
                 <Content>
                     <img src={logo} alt="Logo Trilha Focada." />
 
-                    <Button title="Entrar" onClick={handleLogin} />
+                    <Button title="Entrar" className="welcome-login-button" onClick={handleLogin} />
                     <p>
                         Não tem uma conta? <Link to="/register">Criar Conta</Link>
                     </p>

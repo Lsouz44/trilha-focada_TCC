@@ -29,7 +29,7 @@ export const Content = styled.section`
     font-weight: 700;
 
     > a {
-      color: ${({ theme }) => theme.COLORS.LEMON};
+      color: ${({ theme }) => theme.COLORS.ORANGE};
       margin-left: 0.5rem;
       cursor: pointer;
     }

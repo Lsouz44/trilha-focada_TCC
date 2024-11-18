@@ -24,7 +24,7 @@ export const Container = styled.button`
 
   &.logout {
     &:hover {
-      color: ${({ theme }) => theme.COLORS.RED};
+      color: ${({ theme }) => theme.COLORS.BLUE_DARK};
     }
   }
 

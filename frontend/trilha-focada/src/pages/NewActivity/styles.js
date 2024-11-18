@@ -2,12 +2,14 @@ import styled from 'styled-components';
 import { Form as FormikForm, Field as FormikField, ErrorMessage as FormikErrorMessage } from 'formik';
 
 export const Container = styled.div`
-  width: 1000px;
+  position: relative;
+  top: 80px;
+  width: 50%;
   height: max-content;
+  min-width: 290px;
   margin: auto;
   background-color: ${({ theme }) => theme.COLORS.WHITE};
-  padding: 20px 15px;
-  margin-top: 120px;
+  padding: 20px 30px;
   border-radius: 7px;
   font-family: "Baloo Bhai 2", serif;
   box-shadow: 0px 0px 10px 3px rgba(0, 0, 0, 0.1);
@@ -67,4 +69,37 @@ export const TimeContainer = styled.div`
   display: flex;
   justify-content: baseline;
   gap: 50px;
+`;
+
+export const FlexContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 5rem;
+
+  @media (max-width: 1200px) {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+`;
+
+export const FormSection = styled.div`
+  flex: 1;
+  max-width: 215px;
+`;
+
+export const CalendarSection = styled.div`
+  flex: 2;
+  min-width: 280px;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+  align-items: center;
+
+  .react-calendar {
+    width: 100%;
+    border: none;
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
+  }
 `;

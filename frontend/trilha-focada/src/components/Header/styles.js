@@ -4,7 +4,7 @@ export const Container = styled.header`
   grid-area: header;
 
   width: 100%;
-  height: 8.5%;
+  height: 65px;
   background: ${({ theme }) => theme.COLORS.BLUE_LIGHT2};
   background-size: cover;
   
@@ -21,11 +21,12 @@ export const Container = styled.header`
 
   > img {
     padding: 30px;
-    width: 2.5%;
+    width: 35px;
   }
 
   .central-logo {
-    width: 15%;
+    width: 210px;
+    height: auto;
   }
 `
 

@@ -1,5 +1,7 @@
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import Axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 
@@ -7,7 +9,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button'
 import { Header } from '../../components/Header'
-import { Container, Title, Form, FormGroup, FormField, FormError, RadioLabel, RadioField, Label, TimeContainer } from './styles';
+import { Container, Title, Form, FormGroup, FormField, FormError,
+        RadioLabel, RadioField, Label, TimeContainer, CalendarSection,
+        FlexContainer, FormSection } from './styles';
 
 
 export function NewActivity() {
@@ -28,13 +32,14 @@ export function NewActivity() {
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.userId;
         console.log("User ID: ", userId);
+        console.log("info: ", values);
 
         Axios.post("http://localhost:3001/new-activity", {
             activityName: values.activityName,
             priority: values.priority,
             startTime: values.startTime,
-            endTime: values.endTime
-            //selectedDays: selectedDays
+            endTime: values.endTime,
+            days: values.days
         }, {
             headers: {
                 Authorization: `Bearer ${token}`  // Envie o token no cabeçalho
@@ -60,6 +65,10 @@ export function NewActivity() {
             .required("Este campo é obrigatório"),
         endTime: yup
             .string(),
+        days: yup
+            .array()
+            .min(1, "Selecione ao menos um dia")
+            .required("Este campo é obrigatório"),
       });
   
     return (
@@ -71,67 +80,90 @@ export function NewActivity() {
 
         <Title>Registrar uma nova atividade</Title>
             <Formik
-            initialValues={{endTime: "",}}
+            initialValues={{ endTime: "", days: [], }}
             onSubmit={handleClickRegisterActivity}
             validationSchema={validationNewActivity}
             >
-    
+            
+            {({ setFieldValue }) => (
             <Form>
-    
-                <FormGroup>
+                
+                    <FormGroup>
 
-                    <Label>Atividade:</Label>
-                    <FormField name="activityName"
-                    placeholder="Ex.: Estudo para prova de Cálculo II" />
+                        <Label>Atividade:</Label>
+                        <FormField name="activityName"
+                        placeholder="Ex.: Estudo para prova de Cálculo II" />
+            
+                        <FormError component="span"
+                        name="activityName" />
         
-                    <FormError component="span"
-                    name="activityName" />
-    
-                </FormGroup>
+                    </FormGroup>
 
-                <FormGroup>
-                    <Label>Prioridade:</Label>
-                    <RadioLabel>
-                        <RadioField type="radio" name="priority" value="1" />
-                        Alta
-                    </RadioLabel>
+                <FlexContainer>
 
-                    <RadioLabel>
-                        <RadioField type="radio" name="priority" value="2" />
-                        Média
-                    </RadioLabel>
+                <FormSection>
 
-                    <RadioLabel>
-                        <RadioField type="radio" name="priority" value="3" />
-                        Baixa
-                    </RadioLabel>
-                
-                </FormGroup>
-    
-                <FormGroup>
-                    <Label>Horário: </Label>
-                    <TimeContainer>
-                        <div>
-                            <Label className='children'>Início:</Label>
-                            <FormField name="startTime" type="time" placeholder="Horário início" />
-                            <FormError component="span" name="startTime" />
-                        </div>
+                    <FormGroup>
+                        <Label>Prioridade:</Label>
+                        <RadioLabel>
+                            <RadioField type="radio" name="priority" value="1" />
+                            Alta
+                        </RadioLabel>
 
-                        <div>
-                            <Label className='children'>Término:</Label>
-                            <FormField name="endTime" type="time" placeholder="Horário término" />
-                            <FormError component="span" name="endTime" />
-                        </div>
-                    </TimeContainer>
-                
-                </FormGroup>
+                        <RadioLabel>
+                            <RadioField type="radio" name="priority" value="2" />
+                            Média
+                        </RadioLabel>
+
+                        <RadioLabel>
+                            <RadioField type="radio" name="priority" value="3" />
+                            Baixa
+                        </RadioLabel>
+                    
+                    </FormGroup>
+        
+                    <FormGroup>
+                        <Label>Horário: </Label>
+                        <TimeContainer>
+                            <div>
+                                <Label className='children'>Início:</Label>
+                                <FormField name="startTime" type="time" placeholder="Horário início" />
+                                <FormError component="span" name="startTime" />
+                            </div>
+
+                            <div>
+                                <Label className='children'>Término:</Label>
+                                <FormField name="endTime" type="time" placeholder="Horário término" />
+                                <FormError component="span" name="endTime" />
+                            </div>
+                        </TimeContainer>
+                    
+                    </FormGroup>
+
+                    </FormSection>
+
+                    <FormGroup>
+
+                        <CalendarSection>
+                            <Label>Selecione os dias:</Label>
+                            <Calendar
+                            onChange={(dates) => setFieldValue('days', dates)}
+                            selectRange={true}
+                            />
+                        </CalendarSection>
+
+                        <FormError component="span" name="calendar" />
+
+                    </FormGroup>
+
+                </FlexContainer>
     
                 <Button title="Registrar atividade"
                 className="newactivity-button"
                 type="submit" $opacity />
     
             </Form>
-    
+            )}
             </Formik>
 
       </Container>

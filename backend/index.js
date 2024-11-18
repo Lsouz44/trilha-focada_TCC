@@ -92,18 +92,54 @@ app.post("/new-activity", authenticateToken, async (req, res) => {
     const priority = req.body.priority;
     const startTime = req.body.startTime;
     const endTime = req.body.endTime;
+    const days = req.body.days;
     const userId = req.user.userId;
-    // const selectedDays = req.body.selectedDays;
+
+    const formattedDays = days.map(day => {
+        if (day instanceof Date) {
+            // Criar uma nova data sem hora (apenas o dia)
+            const localDay = new Date(day);
+            localDay.setHours(0, 0, 0, 0);  // Zerar as horas, minutos, segundos e milissegundos
+    
+            // Retorna a data no formato yyyy-MM-dd
+            return localDay.toISOString().split('T')[0];
+        }
+    
+        if (typeof day === 'string' || day instanceof String) {
+            const parsedDate = new Date(day);
+            parsedDate.setHours(0, 0, 0, 0); // Zerar as horas, minutos, segundos e milissegundos
+            return parsedDate.toISOString().split('T')[0];
+        }
+    
+        return day;
+    });
 
     try {
         await db.query(
-            "INSERT INTO banco.activity (activity_name, priority, start_time, end_time, idusuario) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-            [activityName, priority, startTime, endTime, userId]
+            "INSERT INTO banco.activity (activity_name, priority, start_time, end_time, idusuario, days) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+            [activityName, priority, startTime, endTime, userId, formattedDays]
         );
         res.send({ msg: "Atividade cadastrada com sucesso!" });
     } catch (err) {
         console.error("Erro ao cadastrar atividades:", err);
         res.status(500).send("Erro ao cadastrar atividades");
+    }
+});
+
+app.get("/days-activities", authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+
+    try {
+        const result = await db.query(
+            "SELECT days FROM banco.activity WHERE idusuario = $1",
+            [userId]
+        );
+
+        const activities = result.rows.map((row) => row.days);
+        res.json({ activities });
+    } catch (err) {
+        console.error("Erro ao buscar atividades:", err);
+        res.status(500).send("Erro ao buscar atividades");
     }
 });
 
