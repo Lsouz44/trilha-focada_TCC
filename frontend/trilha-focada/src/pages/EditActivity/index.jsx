@@ -4,10 +4,9 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { addDays, differenceInDays } from 'date-fns';
 import Axios from 'axios';
-import { jwtDecode } from "jwt-decode";
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../../components/Button'
 import { Header } from '../../components/Header'
 import { Container, Title, Form, FormGroup, FormField, FormError,
@@ -15,9 +14,11 @@ import { Container, Title, Form, FormGroup, FormField, FormError,
         FlexContainer, FormSection } from './styles';
 
 
-export function NewActivity() {
+export function EditActivity () {
 
     const [headerHeight, setHeaderHeight] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const token = localStorage.getItem("token");
     const navigate = useNavigate()
 
     const handleHeaderHeightChange = (height) => {
@@ -28,30 +29,49 @@ export function NewActivity() {
         navigate("/home")
     }
 
-    const handleClickRegisterActivity = (values) => {
-        const token = localStorage.getItem('token');
-        const decodedToken = jwtDecode(token);
-        const userId = decodedToken.userId;
+    const { id } = useParams();
+    const [activity, setActivity] = useState(null);
+    
+    useEffect(() => {
+        const fetchActivity = async () => {
+          try {
+            const response = await Axios.get(`http://localhost:3001/activity/${id}`, {
+            headers: { Authorization: `Bearer ${token}`, },
+            });
+            setActivity(response.data);
+          } catch (error) {
+            console.error("Erro ao buscar atividade:", error);
+            alert("Erro ao carregar os dados da atividade.");
+          } finally {
+            setLoading(false);
+          }
+        };
+    
+        fetchActivity();
+      }, [id, token]);
 
-        Axios.post("http://localhost:3001/new-activity", {
-            activityName: values.activityName,
-            priority: values.priority,
-            startTime: values.startTime,
-            endTime: values.endTime,
-            days: values.days
-        }, {
-            headers: {
-                Authorization: `Bearer ${token}`  // Envie o token no cabeçalho
-            }
-        }).then((response) => {
-            alert(response.data.msg);
+    const handleUpdate = async (values) => {
+        try {
+            const response = await Axios.put(`http://localhost:3001/update-activity/${id}`, values, {
+            headers: { Authorization: `Bearer ${token}`, },
+            });                
+            alert("Atividade atualizada com sucesso!");
+            setActivity(response.data);
             handleHome();
-        }).catch((error) => {
-            console.error("Erro ao cadastrar atividade:", error);
-        });
+        } catch (error) {
+            console.error("Erro ao atualizar atividade:", error);
+        }
+    };
+      
+    if (loading) {
+        return <div>Carregando...</div>;
     }
 
-    const validationNewActivity = yup.object().shape({
+    if (!activity) {
+        return <div>Erro ao carregar atividade.</div>;
+    }
+
+    const validationEditActivity = yup.object().shape({
         activityName: yup
             .string()
             .required("Este campo é obrigatório"),
@@ -74,7 +94,7 @@ export function NewActivity() {
             const daysDiff = differenceInDays(new Date(end), new Date(start));
 
             for (let i = 0; i <= daysDiff; i++) {
-                dates.push(addDays(new Date(start), i).toISOString().split('T')[0]);
+                dates.push(addDays(new Date(start), i));
             }
             return dates;
       };
@@ -86,21 +106,28 @@ export function NewActivity() {
         onHeightChange={handleHeaderHeightChange}
         />
 
-        <Title>Registrar uma nova atividade</Title>
+        <Title>Editar atividade</Title>
             <Formik
-            initialValues={{ endTime: "", days: [], }}
-            onSubmit={handleClickRegisterActivity}
-            validationSchema={validationNewActivity}
+            initialValues={{
+                activityName: activity.activity_name || "",
+                priority: activity.priority || "",
+                startTime: activity.start_time || "",
+                endTime: activity.end_time || "",
+                days: activity.days || [],
+            }}
+            onSubmit={handleUpdate}
+            validationSchema={validationEditActivity}
             >
             
-            {({ setFieldValue }) => (
+            {({ setFieldValue, handleChange, values }) => (
             <Form>
                 
                     <FormGroup>
 
                         <Label>Atividade:</Label>
                         <FormField name="activityName"
-                        placeholder="Ex.: Estudo para prova de Cálculo II" />
+                            onChange={handleChange}
+                            value={values.activityName}/>
             
                         <FormError component="span"
                         name="activityName" />
@@ -114,17 +141,17 @@ export function NewActivity() {
                     <FormGroup>
                         <Label>Prioridade:</Label>
                         <RadioLabel>
-                            <RadioField type="radio" name="priority" value="1" />
+                            <RadioField type="radio" name="priority" value="1" onChange={() => setFieldValue("priority", 1)} checked={values.priority === 1} />
                             Alta
                         </RadioLabel>
 
                         <RadioLabel>
-                            <RadioField type="radio" name="priority" value="2" />
+                            <RadioField type="radio" name="priority" value="2" onChange={() => setFieldValue("priority", 2)} checked={values.priority === 2} />
                             Média
                         </RadioLabel>
 
                         <RadioLabel>
-                            <RadioField type="radio" name="priority" value="3" />
+                            <RadioField type="radio" name="priority" value="3" onChange={() => setFieldValue("priority", 3)} checked={values.priority === 3} />
                             Baixa
                         </RadioLabel>
                     
@@ -135,13 +162,13 @@ export function NewActivity() {
                         <TimeContainer>
                             <div>
                                 <Label className='children'>Início:</Label>
-                                <FormField name="startTime" type="time" placeholder="Horário início" />
+                                <FormField name="startTime" type="time" onChange={handleChange} value={values.startTime} />
                                 <FormError component="span" name="startTime" />
                             </div>
 
                             <div>
                                 <Label className='children'>Término:</Label>
-                                <FormField name="endTime" type="time" placeholder="Horário término" />
+                                <FormField name="endTime" type="time" onChange={handleChange} value={values.endTime} />
                                 <FormError component="span" name="endTime" />
                             </div>
                         </TimeContainer>
@@ -157,11 +184,21 @@ export function NewActivity() {
                             <Calendar
                             onChange={(dates) => {
                                 if (Array.isArray(dates) && dates.length === 2) {
-                                  const allDates = generateDateRange(dates[0], dates[1]); // Gere todas as datas no intervalo
+                                  const startDate = new Date(dates[0]).setHours(0, 0, 0, 0); // Ajusta para o início do dia
+                                  const endDate = new Date(dates[1]).setHours(23, 59, 59, 999); // Ajusta para o final do dia  
+                                  const allDates = generateDateRange(startDate, endDate); // Gere todas as datas no intervalo
                                   setFieldValue('days', allDates);
                                 }
                               }}
                             selectRange={true}
+                            value={
+                                values.days.length > 0
+                                  ? [
+                                      new Date(values.days[0]).setHours(0, 0, 0, 0), // Converter para Date a primeira data do array de 'days'
+                                      new Date(values.days[values.days.length - 1]).setHours(23, 59, 59, 999), // Converter para Date a última data do array de 'days'
+                                    ]
+                                  : undefined
+                              }
                             />
                         </CalendarSection>
 
@@ -171,7 +208,7 @@ export function NewActivity() {
 
                 </FlexContainer>
     
-                <Button title="Registrar atividade"
+                <Button title="Salvar edição da atividade"
                 className="newactivity-button"
                 type="submit" $opacity />
     

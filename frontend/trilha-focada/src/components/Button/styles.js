@@ -59,6 +59,7 @@ export const Container = styled.button.attrs((props) => ({
 
   &.inline-button {
     width: auto;
+    height: 50px;
     padding: 0.9375rem 1.25rem;
     margin: 0 auto;
   }

@@ -6,6 +6,7 @@ import { SignIn } from '../pages/SignIn';
 import { SignUp } from '../pages/SignUp';
 import { Home } from '../pages/Home';
 import { NewActivity } from '../pages/NewActivity';
+import { EditActivity } from '../pages/EditActivity';
 
 export function AppRouter() {
   return (
@@ -16,6 +17,7 @@ export function AppRouter() {
         <Route path="/register" element={<SignUp />} />
         <Route path="/home" element={<Home />} />
         <Route path="/new-activity" element={<NewActivity />} />
+        <Route path="/edit-activity/:id" element={<EditActivity />} />
         <Route path="*" element={<Welcome />} />
       </Routes>
     </Router>

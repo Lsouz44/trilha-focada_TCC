@@ -16,6 +16,11 @@ export const Container = styled.div`
     left: 30px;
     top: 95px;
   }
+
+  .feed {
+    font-size: 16px;
+    margin-top: 170px;
+  }
 `;
 
 export const LeftColumn = styled.div`
@@ -53,8 +58,98 @@ export const CalendarSection = styled.div`
   }
 
   .react-calendar__tile.marked-date {
-    background-color: #4caf50;
+    background-color: ${({ theme }) => theme.COLORS.ORANGE};
     color: white;
     border-radius: 50%;
   }
 `;
+
+export const FormList = styled.form`
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 180px;
+
+  > fieldset {
+    width: 100%;
+    border: none;
+
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+
+    > legend {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      font-size: 1.76rem;
+      font-weight: 600;
+      color: ${({ theme }) => theme.COLORS.BLUE_DARK};
+      margin-bottom: -40px;
+      padding: 0rem 2.5rem;
+
+      .filter-container {
+        font-size: 1.1rem;
+        margin-left: 335px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+    }
+
+    > h1 {
+      color: ${({ theme }) => theme.COLORS.ORANGE};
+      font-size: 1.5rem;
+      font-weight: 400;
+      margin: 3.5rem 2.5rem;
+      border-top: 1px solid ${({ theme }) => theme.COLORS.BLACK};
+      padding-top: 20px;
+    }
+
+    > strong {
+      color: ${({ theme }) => theme.COLORS.BLACK};
+      font-size: 1rem;
+      margin-bottom: 0.625rem;
+    }
+
+    > p {
+      color: ${({ theme }) => theme.COLORS.BLACK};
+      font-size: 1rem;
+      margin-bottom: 0.625rem;
+    }
+  }
+`
+
+export const ListFeed = styled.ul`
+  width: 765px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.825rem;
+
+  > li {
+    width: 100%;
+    padding: 0.5rem 1rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background-color: ${({ theme }) => theme.COLORS.BLUE_LIGHT};
+    border-radius: 0.625rem;
+
+    > div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.625rem;
+
+      > p {
+        font-size: 1.25rem;
+        color: ${({ theme }) => theme.COLORS.WHITE};
+      }
+    }
+  }
+`
