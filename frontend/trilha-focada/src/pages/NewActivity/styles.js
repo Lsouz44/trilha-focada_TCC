@@ -8,6 +8,7 @@ export const Container = styled.div`
   height: max-content;
   min-width: 290px;
   margin: auto;
+  margin-bottom: 110px;
   background-color: ${({ theme }) => theme.COLORS.WHITE};
   padding: 20px 30px;
   border-radius: 7px;

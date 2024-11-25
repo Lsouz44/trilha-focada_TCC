@@ -25,8 +25,21 @@ export const Container = styled.header`
   }
 
   .central-logo {
+    padding-left: 93px;
     width: 210px;
     height: auto;
+  }
+
+  .notification-badge {
+    position: absolute;
+    top: 9px;
+    right: 88px;
+    background-color: ${({theme}) => theme.COLORS.ORANGE};
+    color: ${({theme}) => theme.COLORS.WHITE};
+    font-size: 11px;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-weight: bold;
   }
 `
 
@@ -48,3 +61,58 @@ export const Nav = styled.nav`
     }
   }
 `
+export const NotificationDropdown = styled.div`
+  position: absolute;
+  top: 50px; /* Ajuste conforme necessário */
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  z-index: 1000;
+
+  .notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+
+    p {
+      margin: 0 0 10px;
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+
+      button {
+        padding: 5px 10px;
+        font-size: 12px;
+        border: none;
+        cursor: pointer;
+        border-radius: 3px;
+
+        &.accept {
+          background-color: #4caf50;
+          color: #fff;
+        }
+
+        &.reject {
+          background-color: #f44336;
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  .notification-item:last-child {
+    border-bottom: none;
+  }
+
+  p {
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    color: #555;
+  }
+`;

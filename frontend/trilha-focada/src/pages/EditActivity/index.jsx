@@ -29,6 +29,10 @@ export function EditActivity () {
         navigate("/home")
     }
 
+    function handleGoBack() {
+        navigate(-1)
+    }
+
     const { id } = useParams();
     const [activity, setActivity] = useState(null);
     
@@ -211,6 +215,11 @@ export function EditActivity () {
                 <Button title="Salvar edição da atividade"
                 className="newactivity-button"
                 type="submit" $opacity />
+
+                <Button title="Voltar"
+                className="newactivity-button"
+                type="button"
+                onClick={handleGoBack} $opacity />
     
             </Form>
             )}

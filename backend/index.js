@@ -210,6 +210,149 @@ app.put('/update-activity/:id', authenticateToken, async (req, res) => {
     }
 });
 
+app.post('/send-invite', authenticateToken, async (req, res) => {
+    const emailInvite = req.body.emailInvite;
+    const userId = req.user.userId;
+
+    try {
+        // Verificar se o usuário está tentando enviar convite para ele mesmo
+        // if (userId === notificationId) {
+        //     return res.send({
+        //     success: false,
+        //     message: 'Você não pode enviar um convite para si mesmo.',
+        //     });
+        // }
+
+        // Verifica se o acompanhante existe
+        const acompanhante = await db.query(
+            "SELECT * FROM banco.usuarios WHERE email = $1 AND type = $2",
+            [emailInvite, 2]
+        );
+
+        if (!acompanhante.rows || acompanhante.rows.length === 0) {
+            return res.send({ sucess: false, msg: "Acompanhante não encontrado" });
+        }
+
+        // Verifica se já existe um vínculo pendente entre o usuário normal e o acompanhante
+        const acompanhanteId = acompanhante.rows[0].idusuarios
+        const existingresult = await db.query(
+            "SELECT * FROM banco.usuarios_relacionamentos WHERE id_usuario = $1 AND id_acompanhante = $2 AND status = 'pendente'",
+            [userId, acompanhanteId]);
+
+        if (existingresult.rows.length > 0) {
+            return res.send({ success: false, msg: 'Convite já enviado para este acompanhante' });
+        }
+        
+        if (userId === acompanhanteId) {
+            return res.send({ sucess: false, msg: "Você não pode enviar um convite para si mesmo." });
+        }
+
+        await db.query(
+            "INSERT INTO banco.usuarios_relacionamentos (id_usuario, id_acompanhante, status) VALUES ($1, $2, 'pendente')",
+            [userId, acompanhanteId]
+        );
+
+        res.send({ success: true, msg: 'Convite enviado com sucesso!' });
+    } catch (error) {
+        console.error('Erro ao enviar convite:', error);
+        res.status(500).send({ success: false, msg: 'Erro ao enviar convite' });
+    }
+});
+
+app.post('/accept-invite', authenticateToken, async (req, res) => {
+    const acompanhanteId = req.body.acompanhanteId;
+    const notificationId = req.body.notificationId;
+    const userId = req.user.userId;
+    
+    try {
+        // Verifica se a solicitação de vínculo existe e está pendente
+        const result = await db.query(
+            "SELECT * FROM banco.usuarios_relacionamentos WHERE id_usuario = $1 AND id_acompanhante = $2 AND status = 'pendente'",
+            [userId, acompanhanteId]);
+        
+        if (!result) {
+            return res.send({ success: false, msg: 'Solicitação não encontrada ou já processada' });
+        }
+
+        // Atualiza o status para 'aceito'
+        await db.query(
+            "UPDATE banco.usuarios_relacionamentos SET status = $1 WHERE id = $2 RETURNING *",
+            ['aceito', notificationId]
+        );
+
+        return res.send({ success: true, msg: 'Vínculo confirmado com sucesso!' });
+    } catch (error) {
+        console.erro('Erro ao aceitar convite:', error);
+        return res.status(500).send({ success: false, msg: 'Erro ao aceitar convite' });
+    }
+});
+
+app.post('/reject-invite', authenticateToken, async (req, res) => {
+    const acompanhanteId = req.body.acompanhanteId;
+    const notificationId = req.body.notificationId;
+    const userId = req.user.userId;
+
+    try {
+        // Verifica se a solicitação de vínculo existe e está pendente
+        const result = await db.query(
+            "SELECT * FROM banco.usuarios_relacionamentos WHERE id_usuario = $1 AND id_acompanhante = $2 AND status = 'pendente'",
+            [userId, acompanhanteId]);
+        
+        if (!result) {
+            return res.status(404).send({ success: false, msg: 'Solicitação não encontrada ou já processada' });
+        }
+
+        // Atualiza o status para 'recusado'
+        await db.query(
+            "DELETE FROM banco.usuarios_relacionamentos WHERE id = $1 RETURNING *",
+            [notificationId]
+        );
+
+        return res.status(200).send({ success: true, msg: 'Solicitação recusada' });
+    } catch (error) {
+        console.erro('Erro ao recusar convite:', error);
+        return res.status(500).send({ success: false, message: 'Erro ao recusar convite' });
+    }
+});
+
+app.get('/notifications', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+
+    try {
+        const pendingRequest = await db.query(
+            "SELECT * FROM banco.usuarios_relacionamentos WHERE id_acompanhante = $1 AND status = 'pendente'",
+            [userId]
+        );
+
+        return res.send({ success: true, notifications: pendingRequest.rows });
+    } catch (error) {
+        console.error('Erro ao buscar notificações:', error);
+        return res.status(500).send({ success: false, message: 'Erro ao buscar notificações.' });
+    }
+});
+
+app.get("/user-companion", authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+  
+    try {
+      const result = await db.query(`
+        SELECT u.name, ur.id_acompanhante
+        FROM banco.usuarios_relacionamentos ur
+        JOIN banco.usuarios u ON u.idusuarios = ur.id_acompanhante
+        WHERE ur.id_usuario = $1 AND ur.status = 'aceito'
+      `, [userId]);
+  
+      if (result.rows.length === 0) {
+        return res.send({ success: false, msg: "Acompanhante não encontrado." });
+      }
+  
+      res.send({ success: true, companion: result.rows[0] });
+    } catch (error) {
+      console.error("Erro ao buscar acompanhante:", error);
+      res.status(500).json({ success: false, message: "Erro ao buscar acompanhante." });
+    }
+  });
+
 app.listen(3001, () => {
     console.log("Rodando na porta 3001");
 });

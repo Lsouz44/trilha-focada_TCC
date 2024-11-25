@@ -16,6 +16,7 @@ export default {
       RED: "#B60000",
       RED_DARK: "#8A0101",
       GRAY: "#666666",
+      GRAY_LIGHT: "#ccc",
       GRAY_DARK: "#4B4B4B",
       ORANGE: "#DC6E00",
     },

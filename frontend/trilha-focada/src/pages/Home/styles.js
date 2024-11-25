@@ -37,7 +37,65 @@ export const RightColumn = styled.div`
   align-items: center;
   justify-content: flex-start;
 
-  background-color: ${({ theme }) => theme.COLORS.WHITE};
+  background-color: ${({ theme }) => theme.COLORS.WHITE_BACKGROUND};
+
+  .invite-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 25px;
+    margin-left: 10px;
+    margin-top: 200px;
+    font-size: 12px;
+    
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
+
+    background-color: ${({ theme }) => theme.COLORS.WHITE};
+
+    width: 320px;
+
+    .companion-actions {
+      display: flex;
+      gap: 30px;
+    }
+
+    .companion {
+      margin-bottom: 1px;
+      font-weight: 500;
+    }
+
+    .name-companion {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+
+  }
+
+  .avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #ccc;
+  }
+
+  .avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .avatar-icon {
+    font-size: 100px;
+    color: ${({ theme }) => theme.COLORS.BLUE};
+  }
 
 `;
 
@@ -51,8 +109,14 @@ export const CalendarSection = styled.div`
   padding-top: 90px;
 
   .react-calendar {
-    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    width: 370px;
+    margin-right: 40px;
     border: none;
+    border-radius: 10px;
     font-size: 14px;
     box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
   }

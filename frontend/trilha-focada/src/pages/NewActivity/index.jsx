@@ -28,6 +28,10 @@ export function NewActivity() {
         navigate("/home")
     }
 
+    function handleGoBack() {
+        navigate(-1)
+    }
+
     const handleClickRegisterActivity = (values) => {
         const token = localStorage.getItem('token');
         const decodedToken = jwtDecode(token);
@@ -174,6 +178,11 @@ export function NewActivity() {
                 <Button title="Registrar atividade"
                 className="newactivity-button"
                 type="submit" $opacity />
+
+                <Button title="Voltar"
+                className="newactivity-button"
+                type="button"
+                onClick={handleGoBack} $opacity />
     
             </Form>
             )}

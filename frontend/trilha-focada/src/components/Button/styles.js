@@ -72,6 +72,19 @@ export const Container = styled.button.attrs((props) => ({
     width: auto;
   }
 
+  &.invite {
+    padding: 0px 0px;
+    font-size: 17px;
+  }
+
+  &.icon-button {
+    flex: 1; /* Faz os botões crescerem igualmente */
+    padding: 10px;
+    border-radius: 50%;
+    font-size: 14px;
+    text-align: center;
+  }
+
   &.reverse {
     flex-direction: row-reverse;
   }

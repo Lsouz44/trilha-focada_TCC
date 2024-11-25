@@ -8,6 +8,10 @@ import { Header } from '../../components/Header'
 import { CalendarSection, Container, LeftColumn, RightColumn, ListFeed, FormList } from './styles';
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { RiDeleteBin5Line, RiFilter2Fill, RiFilter2Line } from "react-icons/ri"
+import { MdPersonAdd } from "react-icons/md";
+import { PiUserCircleDuotone } from "react-icons/pi";
+import { FaWhatsapp } from "react-icons/fa";
+import { ImProfile } from "react-icons/im";
 import { useNavigate } from "react-router-dom";
 import { Menu } from '../../components/Menu';
 
@@ -18,6 +22,7 @@ export function Home() {
     const [markedDates, setMarkedDates] = useState([]);
     const [activities, setActivities] = useState([]);
     const [filterType, setFilterType] = useState("date");
+    const [companion, setCompanion] = useState(null);
     const token = localStorage.getItem("token");
 
     const handleHeaderHeightChange = (height) => {
@@ -34,12 +39,20 @@ export function Home() {
       navigate(`/edit-activity/${id}`)
     }
 
+    function handleSendInvite() {
+      navigate("/send-invite")
+    }
+
     const handleClickNewActivity = () => {
       handleNewAcitivity();
     };
 
     const handleClickEditActivity = (id) => {
       handleEditActivity(id);
+    };
+
+    const handleClickSendInvite = () => {
+      handleSendInvite();
     };
 
     const handleDelete = async (id) => {
@@ -95,6 +108,25 @@ export function Home() {
       };
   
       fetchActivities();
+    }, []);
+
+    // Função para buscar o acompanhante
+    async function fetchCompanion() {
+      try {
+        const response = await Axios.get("http://localhost:3001/user-companion", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.data.success) {
+          setCompanion(response.data.companion);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar acompanhante:", error);
+      }
+    }
+
+    useEffect(() => {
+      fetchCompanion();
     }, []);
 
     return (
@@ -198,7 +230,53 @@ export function Home() {
               }
             />
             </div>
+
+            
+
           </CalendarSection>
+          
+          <section className="invite-section">
+            <div className="avatar">
+              {companion ? (
+                <img 
+                  src={""} 
+                  alt={companion.name || "Acompanhante"}
+                  className="avatar-image" 
+                />
+              ) : (
+                <PiUserCircleDuotone className="avatar-icon" />
+              )}
+            </div>
+
+            {companion ? (
+              <>
+                <h1 className='companion'>Acompanhante:</h1>
+                <h1 className='name-companion'>{companion.name}</h1>
+                <div className="companion-actions">
+                  <Button className="icon-button"
+                    icon={FaWhatsapp}
+                    onClick={""}
+                    $opacity
+                  />
+                  <Button className="icon-button"
+                    icon={ImProfile}
+                    onClick={""}
+                    $opacity
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <h1>Você ainda não tem um acompanhante.</h1>
+                <Button className="invite"
+                  title="Adicionar acompanhante"
+                  icon={ MdPersonAdd }
+                  onClick={handleClickSendInvite}
+                  $opacity />
+              </>            
+              )}
+          </section>
+
         </RightColumn>
         
       </Container>
