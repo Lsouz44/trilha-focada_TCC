@@ -8,6 +8,7 @@
     border-radius: 7px;
     font-family: 'Baloo Bhai 2', serif;
     box-shadow: 3px 3px rgba(0, 0, 0, 0.7);
+   
 }
 
 h1 {
@@ -18,12 +19,15 @@ h1 {
 
 .login-form {
     padding: 5px;
+   
 }
 
 .form-field {
     display: inline-block;
     padding: 5px;
     margin-top: 20px;
+    text-align: center;
+    
 }
 
 .form-error {
@@ -46,6 +50,7 @@ h1 {
 .login-form {
     padding: 5px;
     width: 100%;
+    text-align: center;
 }
 
 .form-field {
@@ -53,6 +58,7 @@ h1 {
     padding: 5px;
     margin-top: 20px;
     width: 100%;
+    text-align: center;
 }
 
 .form-error {

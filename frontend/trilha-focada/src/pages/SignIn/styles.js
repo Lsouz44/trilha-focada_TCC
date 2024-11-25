@@ -3,6 +3,7 @@ import { Form as FormikForm, Field as FormikField, ErrorMessage as FormikErrorMe
 
 export const Container = styled.div`
   width: 500px;
+  height: max-content;
   text-align: center;
   height: 500px;
   margin: auto;
@@ -12,6 +13,7 @@ export const Container = styled.div`
   border-radius: 7px;
   font-family: 'Baloo Bhai 2', serif;
   box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.3);
+  
 `;
 
 
@@ -33,7 +35,6 @@ export const FormGroup = styled.div`
   label {
   display: block;
   margin-bottom: 5px;
-  text-align: left;
   margin: auto
 }
 `;
@@ -51,7 +52,7 @@ font-family: 'Baloo Bhai 2', serif;
 
 export const Label = styled.label`
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 300;
   color: ${({ theme }) => theme.COLORS.BLACK};
   
 `;
@@ -72,10 +73,10 @@ export const Button = styled.button`
   border-radius: 5px;
   cursor: pointer;
   font-size: 1em;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   transition: background-color 0.3s ease;
-  text-align: center;
   &:hover {
     background-color: ${({ theme }) => theme.COLORS.DARK_BLUE};
   }
+    
 `;

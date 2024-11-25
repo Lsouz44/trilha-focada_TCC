@@ -2,11 +2,8 @@ import { Formik } from 'formik';
 import { useNavigate } from "react-router-dom"
 import * as yup from 'yup';
 import Axios from 'axios';
-
-import { Container, Title, Form, FormGroup, FormField, FormError,Label } from './styles';
+import { Container, Title, Form, FormGroup, FormField, FormError, Label } from './styles';
 import { Button } from '../../components/Button';
-import React from 'react';
-
 
 export function SignUp() {
 
@@ -63,7 +60,7 @@ export function SignUp() {
           <Form>
           
           <FormGroup>
-
+          <Label htmlFor='senha'>Nome: </Label>
               <FormField name="name"
               placeholder="Nome"
               onChange={handleChange}
@@ -75,7 +72,7 @@ export function SignUp() {
           </FormGroup>
           
           <FormGroup>
-                
+          <Label htmlFor='senha'>Tipo de Conta: </Label>
                 <FormField as="select"
                 name="type"
                 onChange={handleChange}
@@ -93,7 +90,7 @@ export function SignUp() {
           </FormGroup>
           
           <FormGroup>
-
+          <Label htmlFor='senha'>Email: </Label>
               <FormField name="email"
               placeholder="Email"
               onChange={handleChange}
@@ -105,7 +102,7 @@ export function SignUp() {
           </FormGroup>
 
           <FormGroup>
-
+          <Label htmlFor='senha'>Senha: </Label>
               <FormField name="password"
               type="password"
               placeholder="Senha"
@@ -118,7 +115,7 @@ export function SignUp() {
           </FormGroup>
 
           <FormGroup>
-
+          <Label htmlFor='senha'>Confirme sua Senha: </Label>
               <FormField name="confirmPassword"
               type="password"
               placeholder="Confirme sua senha"
@@ -131,7 +128,8 @@ export function SignUp() {
           </FormGroup>
 
           <Button title="Cadastrar"
-          className="login-button"
+                className="login-button"
+        
           type="submit" $opacity />
           
           </Form>
