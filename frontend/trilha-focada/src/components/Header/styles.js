@@ -20,12 +20,13 @@ export const Container = styled.header`
   left: 0;
 
   > img {
-    padding: 30px;
+    padding: 12.5px;
+    padding-left: 17.5px;
     width: 35px;
   }
 
   .central-logo {
-    padding-left: 93px;
+    justify-content: center;
     width: 210px;
     height: auto;
   }
@@ -46,12 +47,20 @@ export const Container = styled.header`
 export const Nav = styled.nav`
   > ul {
     list-style: none;
-
-    padding: 20px;
+    margin: 0;
+    padding: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 1.25rem;
+
+    > a {
+        margin-right: 15px;
+        margin-top: 2px;
+        min-inline-size: 180px;
+        color: ${({ theme }) => theme.COLORS.WHITE};
+        font-size: 1.25rem;
+      }
 
     > li {
       > a {
@@ -63,43 +72,48 @@ export const Nav = styled.nav`
 `
 export const NotificationDropdown = styled.div`
   position: absolute;
-  top: 50px; /* Ajuste conforme necessário */
+  top: 65px;
   right: 0;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  background-color: ${({ theme }) => theme.COLORS.BLUE_LIGHT};
+  border: none;
+  border-radius: 0 0 5px 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 300px;
   z-index: 1000;
 
   .notification-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 10px;
     border-bottom: 1px solid #eee;
 
     p {
       margin: 0 0 10px;
-      font-size: 14px;
+      font-size: 15px;
     }
 
     .actions {
       display: flex;
-      justify-content: space-between;
+      gap: 30px;
 
       button {
+        margin-bottom: 10px;
         padding: 5px 10px;
-        font-size: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-size: 15px;
         border: none;
         cursor: pointer;
         border-radius: 3px;
 
         &.accept {
-          background-color: #4caf50;
-          color: #fff;
+          background-color: ${({ theme }) => theme.COLORS.GREEN};
+          color: ${({ theme }) => theme.COLORS.WHITE};
         }
 
         &.reject {
-          background-color: #f44336;
-          color: #fff;
+          background-color: ${({ theme }) => theme.COLORS.RED};
+          color: ${({ theme }) => theme.COLORS.WHITE};
         }
       }
     }
@@ -113,6 +127,6 @@ export const NotificationDropdown = styled.div`
     text-align: center;
     padding: 10px;
     font-size: 14px;
-    color: #555;
+    color: ${({ theme }) => theme.COLORS.WHITE};
   }
 `;

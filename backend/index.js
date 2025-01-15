@@ -1,4 +1,6 @@
 const express = require("express");
+const multer = require('multer');
+const path = require('path');
 const { Pool } = require("pg");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
@@ -13,6 +15,18 @@ const db = new Pool({
     database: "bd_trilhafocada",
     port: 5432,
 });
+
+// Configuração do Multer para salvar o avatar na pasta "uploads/avatars"
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './uploads/avatars'); // Caminho onde as imagens serão salvas
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));  // Nome único para o arquivo
+    }
+});
+
+const upload = multer({ storage });
 
 app.use(express.json());
 app.use(cors());
@@ -319,12 +333,30 @@ app.get('/notifications', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
 
     try {
+        // Buscar notificações relacionadas ao usuário
         const pendingRequest = await db.query(
-            "SELECT * FROM banco.usuarios_relacionamentos WHERE id_acompanhante = $1 AND status = 'pendente'",
+            `SELECT 
+                ur.id, 
+                ur.id_usuario, 
+                ur.id_acompanhante, 
+                ur.status, 
+                u.name AS usuario_name 
+            FROM banco.usuarios_relacionamentos ur
+            JOIN banco.usuarios u 
+            ON ur.id_usuario = u.idusuarios
+            WHERE ur.id_acompanhante = $1 AND ur.status = 'pendente'`,
             [userId]
         );
 
-        return res.send({ success: true, notifications: pendingRequest.rows });
+        // Buscar o nome do usuário logado
+        const userResult = await db.query(
+            `SELECT name FROM banco.usuarios WHERE idusuarios = $1`,
+            [userId]
+        );
+
+        const loggedUserName = userResult.rows[0]?.name || 'Usuário';
+
+        return res.send({ success: true, notifications: pendingRequest.rows, loggedUserName });
     } catch (error) {
         console.error('Erro ao buscar notificações:', error);
         return res.status(500).send({ success: false, message: 'Erro ao buscar notificações.' });
@@ -336,7 +368,7 @@ app.get("/user-companion", authenticateToken, async (req, res) => {
   
     try {
       const result = await db.query(`
-        SELECT u.name, ur.id_acompanhante
+        SELECT u.name, u.avatar, u.phone, u.email, ur.id_acompanhante
         FROM banco.usuarios_relacionamentos ur
         JOIN banco.usuarios u ON u.idusuarios = ur.id_acompanhante
         WHERE ur.id_usuario = $1 AND ur.status = 'aceito'
@@ -351,6 +383,121 @@ app.get("/user-companion", authenticateToken, async (req, res) => {
       console.error("Erro ao buscar acompanhante:", error);
       res.status(500).json({ success: false, message: "Erro ao buscar acompanhante." });
     }
+  });
+
+app.get('/profile', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+
+    try {
+        const user = await db.query(
+            "SELECT idusuarios, name, email, phone, TO_CHAR(birth_date, 'YYYY-MM-DD') AS birth_date, avatar FROM banco.usuarios WHERE idusuarios = $1",
+            [userId]
+        );
+        if (!user.rows.length) return res.status(404).send({ success: false, message: 'Usuário não encontrado.' });
+        
+        return res.send({ success: true, user: user.rows[0] });
+    } catch (error) {
+        console.error('Erro ao buscar perfil:', error);
+        return res.status(500).send({ success: false, message: 'Erro ao buscar perfil.' });
+    }
+});
+
+app.put('/profile', authenticateToken, upload.single('avatar'), async (req, res) => {
+    const userId = req.user.userId;
+    const { name, phone, birth } = req.body;
+    const avatar = req.file ? req.file.filename : null;
+
+    console.log("Dados recebidos no backend:");
+    console.log("name:", name);
+    console.log("phone:", phone);
+    console.log("birth:", birth);
+    console.log("avatar:", avatar);
+
+    try {
+        console.log('Atualizando perfil para o usuário', userId);
+
+        const queryParams = [name, phone, birth];
+        let query = "UPDATE banco.usuarios SET name = $1, phone = $2, birth_date = $3";
+        
+        // Se o avatar foi enviado, adiciona ao comando SQL
+        if (!avatar) {
+            console.log("Atualizando avatar para:", avatar);
+            query += ", avatar = $4";
+            queryParams.push(avatar);
+        } else {
+            console.log("Atualizando avatar para:", avatar);
+            query += ", avatar = $4";
+            queryParams.push(avatar);
+        } // ISSO AQUI NÃO ESTA FUNCIONANDO -> A FOTO EXCLUI E ADICIONA TODA VEZ QUE SALVA
+
+        query += " WHERE idusuarios = $5 RETURNING *";
+        queryParams.push(userId);
+
+        console.log('Query executada:', query, queryParams); 
+
+        // Atualiza os dados do usuário no banco
+        await db.query(query, queryParams);
+
+        return res.send({ success: true, msg: 'Perfil atualizado com sucesso.' });
+    } catch (error) {
+        console.error('Erro ao atualizar perfil:', error);
+        return res.status(500).send({ success: false, message: 'Erro ao atualizar perfil.' });
+    }
+});
+
+app.delete('/user-companion', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+    const { companionId } = req.body;
+
+    if (!companionId) {
+        return res.status(400).send({ success: false, message: 'ID do acompanhante é necessário.' });
+    }
+
+    try {
+        await db.query(
+            "DELETE FROM banco.usuarios_relacionamentos WHERE id_usuario = $1 AND id_acompanhante = $2 AND status = 'aceito'",
+            [userId, companionId]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).send({ success: false, message: 'Relacionamento não encontrado.' });
+        }
+
+        return res.send({ success: true, message: 'Acompanhante removido com sucesso.' });
+    } catch (error) {
+        console.error('Erro ao remover acompanhante:', error);
+        return res.status(500).send({ success: false, message: 'Erro ao remover acompanhante.' });
+    }
+});
+
+app.put('/change-password', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+    const { oldPassword, newPassword } = req.body;
+
+    try {
+        const user = await db.query("SELECT password FROM banco.usuarios WHERE idusuarios = $1", [userId]);
+        if (!user.rows.length) return res.status(404).send({ success: false, message: 'Usuário não encontrado.' });
+
+        const isMatch = await bcrypt.compare(oldPassword, user.rows[0].password);
+        if (!isMatch) return res.status(400).send({ success: false, message: 'Senha antiga incorreta.' });
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await db.query("UPDATE banco.usuarios SET password = $1 WHERE idusuarios = $2", [hashedPassword, userId]);
+
+        return res.send({ success: true, message: 'Senha alterada com sucesso.' });
+    } catch (error) {
+        console.error('Erro ao trocar senha:', error);
+        return res.status(500).send({ success: false, message: 'Erro ao trocar senha.' });
+    }
+});
+
+// Configurar a pasta estática para os avatares
+app.use("/uploads/avatars", express.static(path.join(__dirname, "uploads/avatars")));
+
+app.use("/uploads/avatars", (req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Content-Type", "image/png"); // ou "image/jpeg" dependendo do tipo de arquivo
+    next();
   });
 
 app.listen(3001, () => {

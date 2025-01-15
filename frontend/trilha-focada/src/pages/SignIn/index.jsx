@@ -14,7 +14,7 @@ export function SignIn() {
             navigate("/home")
         }
 
-        const handleClickLogin = (values) => {
+        function handleClickLogin(values){
           Axios.post("http://localhost:3001/login", {
             email: values.email,
             password: values.password,
@@ -24,12 +24,10 @@ export function SignIn() {
               localStorage.setItem('token', token);
               handleHome();
             } else {
-              console.log("LOGIN NÃO REALIZADO");
             }
             alert(response.data.msg);
-            console.log(response);
           }).catch((error) => {
-            console.error("Erro ao cadastrar atividade:", error);
+            console.error("Erro ao fazer login:", error);
           });
         }
       

@@ -8,6 +8,9 @@ import { Home } from '../pages/Home';
 import { NewActivity } from '../pages/NewActivity';
 import { EditActivity } from '../pages/EditActivity';
 import { SendInvite } from '../pages/SendInvite';
+import { Profile } from '../pages/Profile';
+import { Settings } from '../pages/Settings';
+import { Companion } from '../pages/Companion';
 
 export function AppRouter() {
   return (
@@ -20,6 +23,9 @@ export function AppRouter() {
         <Route path="/new-activity" element={<NewActivity />} />
         <Route path="/edit-activity/:id" element={<EditActivity />} />
         <Route path="/send-invite" element={<SendInvite />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/companion" element={<Companion />} />
         <Route path="*" element={<Welcome />} />
       </Routes>
     </Router>

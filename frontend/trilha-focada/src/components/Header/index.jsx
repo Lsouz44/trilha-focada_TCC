@@ -22,6 +22,7 @@ export function Header({
   const navigate = useNavigate()
 
   const [notifications, setNotifications] = useState([]);
+  const [loggedUserName, setLoggedUserName] = useState("");
   const [hasNewNotifications, setHasNewNotifications] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const token = localStorage.getItem("token");
@@ -40,6 +41,7 @@ export function Header({
 
       if (response.data.success) {
         setNotifications(response.data.notifications);
+        setLoggedUserName(response.data.loggedUserName);
         setHasNewNotifications(response.data.notifications.length > 0);
       }
     } catch (error) {
@@ -115,6 +117,8 @@ export function Header({
       />
       <Nav>
         <ul>
+          <a>Olá, {loggedUserName}!</a>
+        
           <li>
             <ButtonText
               icon={TiHome}
@@ -128,14 +132,16 @@ export function Header({
               $fontSizeIcon="35"
               onClick={() => setShowDropdown(!showDropdown)} // Alterna o menu
             />
-            {hasNewNotifications && <span className="notification-badge">+1</span>}
+            {hasNewNotifications && (
+              <span className="notification-badge">+{notifications.length}</span>
+            )}
 
             {showDropdown && (
               <NotificationDropdown>
                 {notifications.length > 0 ? (
                   notifications.map((notification) => (
                     <div key={notification.id} className="notification-item">
-                      <p>{notification.message}</p>
+                      <p>Você tem uma nova solicitação de acompanhamento de {notification.usuario_name}</p>
                       <div className="actions">
                         <button
                           onClick={() => handleAccept(notification.id)}

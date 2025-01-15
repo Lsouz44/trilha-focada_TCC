@@ -38,17 +38,17 @@ export function Menu({ $heightAdjuster, menuIsOpen }) {
                 title="Perfil"
                 className="title-module"
                 onClick={() =>
-                  handleOptions("/home")
+                  handleOptions("/profile")
                 }
               />
           </Modules>
           
           <Modules>
               <ButtonText
-                title="Acompanhante"
+                title="Guia Terapêutico"
                 className="title-module"
                 onClick={() =>
-                  handleOptions("/home")
+                  handleOptions("/companion")
                 }
               />
           </Modules>
@@ -58,7 +58,7 @@ export function Menu({ $heightAdjuster, menuIsOpen }) {
                 title="Configurações"
                 className="title-module"
                 onClick={() =>
-                  handleOptions("/home")
+                  handleOptions("/settings")
                 }
               />
           </Modules>

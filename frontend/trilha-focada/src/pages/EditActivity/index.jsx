@@ -110,7 +110,7 @@ export function EditActivity () {
         onHeightChange={handleHeaderHeightChange}
         />
 
-        <Title>Editar atividade</Title>
+        <Title>Editar Trilha</Title>
             <Formik
             initialValues={{
                 activityName: activity.activity_name || "",
@@ -128,7 +128,7 @@ export function EditActivity () {
                 
                     <FormGroup>
 
-                        <Label>Atividade:</Label>
+                        <Label>Descrição:</Label>
                         <FormField name="activityName"
                             onChange={handleChange}
                             value={values.activityName}/>
@@ -143,20 +143,20 @@ export function EditActivity () {
                 <FormSection>
 
                     <FormGroup>
-                        <Label>Prioridade:</Label>
+                        <Label>Foco:</Label>
                         <RadioLabel>
                             <RadioField type="radio" name="priority" value="1" onChange={() => setFieldValue("priority", 1)} checked={values.priority === 1} />
-                            Alta
+                            Alto
                         </RadioLabel>
 
                         <RadioLabel>
                             <RadioField type="radio" name="priority" value="2" onChange={() => setFieldValue("priority", 2)} checked={values.priority === 2} />
-                            Média
+                            Médio
                         </RadioLabel>
 
                         <RadioLabel>
                             <RadioField type="radio" name="priority" value="3" onChange={() => setFieldValue("priority", 3)} checked={values.priority === 3} />
-                            Baixa
+                            Baixo
                         </RadioLabel>
                     
                     </FormGroup>
@@ -184,7 +184,7 @@ export function EditActivity () {
                     <FormGroup>
 
                         <CalendarSection>
-                            <Label>Selecione os dias:</Label>
+                            <Label>Quando:</Label>
                             <Calendar
                             onChange={(dates) => {
                                 if (Array.isArray(dates) && dates.length === 2) {
@@ -212,7 +212,7 @@ export function EditActivity () {
 
                 </FlexContainer>
     
-                <Button title="Salvar edição da atividade"
+                <Button title="Salvar"
                 className="newactivity-button"
                 type="submit" $opacity />
 

@@ -81,8 +81,8 @@ export function SignUp() {
                 value={values.type}>
 
                   <option value="" label="Selecione o tipo de usuário" />
-                  <option value="1" label="Usuário" />
-                  <option value="2" label="Acompanhante" />
+                  <option value="1" label="Trilheiro" />
+                  <option value="2" label="Guia" />
 
                 </FormField>
 

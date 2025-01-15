@@ -90,7 +90,7 @@ export function NewActivity() {
         onHeightChange={handleHeaderHeightChange}
         />
 
-        <Title>Registrar uma nova atividade</Title>
+        <Title>Adicionar Trilha</Title>
             <Formik
             initialValues={{ endTime: "", days: [], }}
             onSubmit={handleClickRegisterActivity}
@@ -102,7 +102,7 @@ export function NewActivity() {
                 
                     <FormGroup>
 
-                        <Label>Atividade:</Label>
+                        <Label>Descrição:</Label>
                         <FormField name="activityName"
                         placeholder="Ex.: Estudo para prova de Cálculo II" />
             
@@ -116,20 +116,20 @@ export function NewActivity() {
                 <FormSection>
 
                     <FormGroup>
-                        <Label>Prioridade:</Label>
+                        <Label>Foco:</Label>
                         <RadioLabel>
                             <RadioField type="radio" name="priority" value="1" />
-                            Alta
+                            Alto
                         </RadioLabel>
 
                         <RadioLabel>
                             <RadioField type="radio" name="priority" value="2" />
-                            Média
+                            Médio
                         </RadioLabel>
 
                         <RadioLabel>
                             <RadioField type="radio" name="priority" value="3" />
-                            Baixa
+                            Baixo
                         </RadioLabel>
                     
                     </FormGroup>
@@ -157,7 +157,7 @@ export function NewActivity() {
                     <FormGroup>
 
                         <CalendarSection>
-                            <Label>Selecione os dias:</Label>
+                            <Label>Quando:</Label>
                             <Calendar
                             onChange={(dates) => {
                                 if (Array.isArray(dates) && dates.length === 2) {
@@ -175,7 +175,7 @@ export function NewActivity() {
 
                 </FlexContainer>
     
-                <Button title="Registrar atividade"
+                <Button title="Salvar"
                 className="newactivity-button"
                 type="submit" $opacity />
 

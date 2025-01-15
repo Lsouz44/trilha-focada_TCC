@@ -7,7 +7,7 @@ import { Button } from '../../components/Button'
 import { Header } from '../../components/Header'
 import { CalendarSection, Container, LeftColumn, RightColumn, ListFeed, FormList } from './styles';
 import { AiOutlinePlusCircle } from "react-icons/ai";
-import { RiDeleteBin5Line, RiFilter2Fill, RiFilter2Line } from "react-icons/ri"
+import { RiDeleteBin5Line, RiEdit2Line, RiFilter2Fill, RiFilter2Line } from "react-icons/ri"
 import { MdPersonAdd } from "react-icons/md";
 import { PiUserCircleDuotone } from "react-icons/pi";
 import { FaWhatsapp } from "react-icons/fa";
@@ -129,6 +129,10 @@ export function Home() {
       fetchCompanion();
     }, []);
 
+    const avatarUrl = companion && companion.avatar
+      ? `http://localhost:3001/uploads/avatars/${companion.avatar}` 
+      : 'http://localhost:3001/uploads/avatars/default-avatar.jpg';
+
     return (
       <Container>
 
@@ -142,12 +146,12 @@ export function Home() {
         />
 
         <section className="activity-section">
-          <Button className="register-newactivity" title="Nova atividade" icon={AiOutlinePlusCircle} onClick={handleClickNewActivity} $opacity></Button>
+          <Button className="register-newactivity" title="Nova Trilha" icon={AiOutlinePlusCircle} onClick={handleClickNewActivity} $opacity></Button>
         </section>
 
         <FormList>
           <fieldset>
-                <legend>Próximas atividades
+                <legend>Próximos passos
                   <div className='filter-container'>
                   <Button icon={filterType === "date" ? RiFilter2Line : RiFilter2Fill}
                     className="inline-button"
@@ -192,7 +196,7 @@ export function Home() {
 
                         <div>
                           <Button
-                            title="Editar"
+                            icon={RiEdit2Line}
                             className="inline-button"
                             onClick={() => handleClickEditActivity(activity.idactivity)}
                           />
@@ -207,7 +211,7 @@ export function Home() {
                   </ListFeed>
                 ) : (
                   <>
-                    <h1>Nenhuma atividade registrada. Use o botão acima para adicionar uma atividade.</h1>
+                    <h1>Fique tranquilo! Nenhuma trilha a ser caminhada no momento. Use o botão acima para adicionar uma trilha.</h1>
                   </>
                 )}
           </fieldset>
@@ -234,13 +238,12 @@ export function Home() {
             
 
           </CalendarSection>
-          
+
           <section className="invite-section">
             <div className="avatar">
               {companion ? (
                 <img 
-                  src={""} 
-                  alt={companion.name || "Acompanhante"}
+                  src={avatarUrl}
                   className="avatar-image" 
                 />
               ) : (
@@ -250,26 +253,26 @@ export function Home() {
 
             {companion ? (
               <>
-                <h1 className='companion'>Acompanhante:</h1>
+                <h1 className='companion'>Guia Terapêutico:</h1>
                 <h1 className='name-companion'>{companion.name}</h1>
                 <div className="companion-actions">
                   <Button className="icon-button"
                     icon={FaWhatsapp}
-                    onClick={""}
+                    //onClick={""}
                     $opacity
                   />
                   <Button className="icon-button"
                     icon={ImProfile}
-                    onClick={""}
+                    //onClick={""}
                     $opacity
                   />
                 </div>
               </>
             ) : (
               <>
-                <h1>Você ainda não tem um acompanhante.</h1>
+                <h1>Você ainda não possui um guia para sua jornada.</h1>
                 <Button className="invite"
-                  title="Adicionar acompanhante"
+                  title="Adicionar um guia terapêutico"
                   icon={ MdPersonAdd }
                   onClick={handleClickSendInvite}
                   $opacity />
