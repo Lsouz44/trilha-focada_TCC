@@ -73,6 +73,12 @@ export const RightColumn = styled.div`
       font-size: 24px;
     }
 
+    .text-companion {
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
   }
 
   .avatar {

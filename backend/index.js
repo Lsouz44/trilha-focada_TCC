@@ -111,8 +111,8 @@ app.post("/new-activity", authenticateToken, async (req, res) => {
 
     try {
         await db.query(
-            "INSERT INTO banco.activity (activity_name, priority, start_time, end_time, idusuario, days) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-            [activityName, priority, startTime, endTime, userId, days]
+            "INSERT INTO banco.activity (activity_name, priority, start_time, end_time, idusuario, days, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+            [activityName, priority, startTime, endTime, userId, days, 'active']
         );
         res.send({ msg: "Atividade cadastrada com sucesso!" });
     } catch (err) {
@@ -126,8 +126,8 @@ app.get("/days-activities", authenticateToken, async (req, res) => {
 
     try {
         const result = await db.query(
-            "SELECT days FROM banco.activity WHERE idusuario = $1",
-            [userId]
+            "SELECT days FROM banco.activity WHERE idusuario = $1 AND status = $2",
+            [userId, 'active']
         );
 
         const activities = result.rows.map((row) => row.days);
@@ -143,8 +143,8 @@ app.get('/feed-activities', authenticateToken, async (req, res) => {
   
     try {
       const activities = await db.query(
-        'SELECT idactivity, activity_name, priority, start_time, end_time, days FROM banco.activity WHERE idusuario = $1 ORDER BY days[1] ASC',
-        [userId]
+        'SELECT idactivity, activity_name, priority, start_time, end_time, days FROM banco.activity WHERE idusuario = $1 AND status = $2 ORDER BY days[1] ASC',
+        [userId, 'active']
       );
       res.json(activities.rows);
     } catch (error) {
@@ -161,7 +161,7 @@ app.get('/activity/:id', authenticateToken, async (req, res) => {
     }
   
     try {
-      const result = await db.query('SELECT * FROM banco.activity WHERE idactivity = $1', [id]);
+      const result = await db.query('SELECT * FROM banco.activity WHERE idactivity = $1 AND status = $2', [id, 'active']);
   
       if (result.rows.length === 0) {
         return res.status(404).send({ msg: "Atividade não encontrada" });
@@ -174,7 +174,36 @@ app.get('/activity/:id', authenticateToken, async (req, res) => {
     }
   });
 
-app.delete('/delete-activity/:id', authenticateToken, async (req, res) => {
+app.put('/activity/:id/complete', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const activityId = parseInt(id, 10);
+
+    if (!id) {
+        return res.status(400).send({ msg: "ID da atividade não fornecido" });
+    }
+
+    if (isNaN(activityId)) {
+        return res.status(400).send({ msg: "ID da atividade inválido" });
+    }
+
+    try {
+        const result = await db.query(
+            'UPDATE banco.activity SET status = $1 WHERE idactivity = $2 AND status = $3',
+            ['completed', activityId, 'active']
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).send({ msg: "Atividade não encontrada ou já concluída." });
+        }
+
+        res.status(200).send({ msg: "Atividade concluída com sucesso!" });
+    } catch (error) {
+        console.error('Erro ao marcar atividade como concluída:', error);
+        res.status(500).json({ error: 'Erro ao marcar atividade como concluída.' });
+    }
+});
+
+app.put('/activity/:id/delete', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const activityId = parseInt(id, 10);
 
@@ -188,8 +217,8 @@ app.delete('/delete-activity/:id', authenticateToken, async (req, res) => {
 
     try {
         await db.query(
-        'DELETE FROM banco.activity WHERE idactivity = $1',
-        [activityId]
+        'UPDATE banco.activity SET status = $1 WHERE idactivity = $2',
+        ['deleted', activityId]
         );
         res.status(200).send({ msg: "Atividade excluída com sucesso!" });
     } catch (error) {
@@ -368,11 +397,11 @@ app.get("/user-companion", authenticateToken, async (req, res) => {
   
     try {
       const result = await db.query(`
-        SELECT u.name, u.avatar, u.phone, u.email, ur.id_acompanhante
+        SELECT u.name, u.avatar, u.phone, u.email, ur.id_acompanhante, ur.status, ur.status_companion
         FROM banco.usuarios_relacionamentos ur
         JOIN banco.usuarios u ON u.idusuarios = ur.id_acompanhante
-        WHERE ur.id_usuario = $1 AND ur.status = 'aceito'
-      `, [userId]);
+        WHERE ur.id_usuario = $1 AND ur.status = 'aceito' AND ur.status_companion = $2
+      `, [userId, 'active']);
   
       if (result.rows.length === 0) {
         return res.send({ success: false, msg: "Acompanhante não encontrado." });
@@ -445,7 +474,7 @@ app.put('/profile', authenticateToken, upload.single('avatar'), async (req, res)
     }
 });
 
-app.delete('/user-companion', authenticateToken, async (req, res) => {
+app.put('/user-companion/delete', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
     const { companionId } = req.body;
 
@@ -454,9 +483,9 @@ app.delete('/user-companion', authenticateToken, async (req, res) => {
     }
 
     try {
-        await db.query(
-            "DELETE FROM banco.usuarios_relacionamentos WHERE id_usuario = $1 AND id_acompanhante = $2 AND status = 'aceito'",
-            [userId, companionId]
+        const result = await db.query(
+            "UPDATE banco.usuarios_relacionamentos SET status_companion = $1 WHERE id_usuario = $2 AND id_acompanhante = $3 AND status = 'aceito'",
+            ['deleted', userId, companionId]
         );
 
         if (result.rowCount === 0) {
@@ -490,6 +519,22 @@ app.put('/change-password', authenticateToken, async (req, res) => {
         return res.status(500).send({ success: false, message: 'Erro ao trocar senha.' });
     }
 });
+
+app.get('/dashboard/activities', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+
+    try {
+        const result = await db.query(
+            'SELECT * FROM banco.activity WHERE idusuario = $1',
+            [userId]
+        );
+        res.send({ success: true, activities: result.rows });
+    } catch (error) {
+        console.error('Erro ao buscar atividades:', error);
+        res.status(500).send({ success: false, message: 'Erro ao buscar atividades.' });
+    }
+});
+
 
 // Configurar a pasta estática para os avatares
 app.use("/uploads/avatars", express.static(path.join(__dirname, "uploads/avatars")));

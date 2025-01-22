@@ -64,6 +64,15 @@ export const Container = styled.button.attrs((props) => ({
     margin: 0 auto;
   }
 
+  &.inline-button-green {
+    width: auto;
+    height: 50px;
+    background: ${({ theme }) => theme.COLORS.GREEN};
+    color: ${({ theme }) => theme.COLORS.WHITE};
+    padding: 0.9375rem 1.25rem;
+    margin: 0 auto;
+  }
+
   &.home-request {
     min-height: 10rem;
   }

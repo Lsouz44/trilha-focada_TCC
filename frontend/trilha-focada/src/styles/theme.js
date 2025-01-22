@@ -19,6 +19,7 @@ export default {
       GRAY_LIGHT: "#ccc",
       GRAY_DARK: "#4B4B4B",
       ORANGE: "#DC6E00",
+      YELLOW: "#EBDF3B",
     },
   }
   

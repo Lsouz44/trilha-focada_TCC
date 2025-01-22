@@ -45,12 +45,15 @@ export function Companion () {
 
     const handleRemoveCompanion = async (companionId) => {
         try {
-            const response = await Axios.delete(
-              "http://localhost:3001/user-companion", {
-                data: { companionId },
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            alert(response.data.msg);
+            const response = await Axios.put(
+              `http://localhost:3001/user-companion/delete`,
+                { companionId },
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            
+            alert(response.data.message);
             setCompanion(null); // Atualiza estado local
             handleHome();
         } catch (error) {
@@ -104,7 +107,7 @@ export function Companion () {
                 <Button title="Remover"
                 className="newactivity-button"
                 type="button"
-                onClick={handleRemoveCompanion} $opacity />
+                onClick={() => handleRemoveCompanion(companion.id_acompanhante)} $opacity />
 
                 <Button title="Voltar"
                 className="newactivity-button"

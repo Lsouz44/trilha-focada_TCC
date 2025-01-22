@@ -7,13 +7,15 @@ import { Button } from '../../components/Button'
 import { Header } from '../../components/Header'
 import { CalendarSection, Container, LeftColumn, RightColumn, ListFeed, FormList } from './styles';
 import { AiOutlinePlusCircle } from "react-icons/ai";
-import { RiDeleteBin5Line, RiEdit2Line, RiFilter2Fill, RiFilter2Line } from "react-icons/ri"
+import { FcStatistics } from "react-icons/fc";
+import { RiDeleteBin5Line, RiEdit2Line, RiFilter2Fill, RiFilter2Line, RiCheckLine } from "react-icons/ri"
 import { MdPersonAdd } from "react-icons/md";
 import { PiUserCircleDuotone } from "react-icons/pi";
 import { FaWhatsapp } from "react-icons/fa";
 import { ImProfile } from "react-icons/im";
 import { useNavigate } from "react-router-dom";
 import { Menu } from '../../components/Menu';
+import { DashboardChart } from '../../components/DashboardChart';
 
 export function Home() {
 
@@ -30,6 +32,10 @@ export function Home() {
     }
 
     const navigate = useNavigate()
+
+    function handleDashboard() {
+      navigate("/dashboard")
+    }
 
     function handleNewAcitivity() {
         navigate("/new-activity")
@@ -55,11 +61,45 @@ export function Home() {
       handleSendInvite();
     };
 
-    const handleDelete = async (id) => {
+    const handleClickCompletedActivity = async (id) => {
+      const confirm = window.confirm("Tem certeza de que deseja marcar esta trilha como concluída?");
+      if (!confirm) return;
+
       try {
-        const response = await Axios.delete(`http://localhost:3001/delete-activity/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+          const response = await Axios.put(
+              `http://localhost:3001/activity/${id}/complete`,
+              {},
+              { headers: { Authorization: `Bearer ${token}` } }
+          );
+
+          console.log(response.data);
+
+          alert(response.data.msg);
+  
+          // Atualizar a lista de atividades
+          setActivities((prevActivities) =>
+              prevActivities.map((activity) =>
+                  activity.idactivity === id
+                      ? { ...activity, status: 'concluído' }
+                      : activity
+              )
+          );
+      } catch (error) {
+          console.error("Erro ao marcar atividade como concluída:", error);
+      }
+  };
+
+    const handleDelete = async (id) => {
+      const confirm = window.confirm("Tem certeza de que deseja deletar esta trilha? Essa ação não pode ser desfeita.");
+      if (!confirm) return;
+
+      try {
+        const response = await Axios.put(`http://localhost:3001/activity/${id}/delete`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         alert(response.data.msg);
         setActivities((prevActivities) =>
             prevActivities.filter((activity) => activity.idactivity !== id)
@@ -196,6 +236,11 @@ export function Home() {
 
                         <div>
                           <Button
+                            icon={RiCheckLine}
+                            className="inline-button-green"
+                            onClick={() => handleClickCompletedActivity(activity.idactivity)}
+                          />
+                          <Button
                             icon={RiEdit2Line}
                             className="inline-button"
                             onClick={() => handleClickEditActivity(activity.idactivity)}
@@ -270,7 +315,7 @@ export function Home() {
               </>
             ) : (
               <>
-                <h1>Você ainda não possui um guia para sua jornada.</h1>
+                <h1 className='text-companion'>Você ainda não possui um guia para sua jornada.</h1>
                 <Button className="invite"
                   title="Adicionar um guia terapêutico"
                   icon={ MdPersonAdd }
@@ -278,6 +323,10 @@ export function Home() {
                   $opacity />
               </>            
               )}
+          </section>
+
+          <section>
+          <DashboardChart />
           </section>
 
         </RightColumn>
