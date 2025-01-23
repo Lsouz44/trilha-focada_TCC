@@ -101,6 +101,66 @@ app.post("/login", async (req, res) => {
     }
 });
 
+app.get('/home', authenticateToken, async (req, res) => {
+    const userId = req.user.userId; // userId extraído do token
+
+    try {
+        // Verifica o tipo de usuário
+        const userResult = await db.query(
+            'SELECT type FROM banco.usuarios WHERE idusuarios = $1',
+            [userId]
+        );
+
+        if (userResult.rows.length === 0) {
+            return res.status(404).send({ error: 'Usuário não encontrado' });
+        }
+
+        const userType = userResult.rows[0].type;
+
+        if (userType === '2') {
+            // Verifica se o usuário do tipo 2 é acompanhante de algum usuário do tipo 1
+            const relationshipResult = await db.query(
+                'SELECT idusuario FROM banco.usuarios_relacionamentos WHERE idacompanhante = $1',
+                [userId]
+            );
+
+            if (relationshipResult.rows.length === 0) {
+                return res.status(400).send({ error: 'Você não está vinculado a nenhum usuário como acompanhante' });
+            }
+
+            const companionId = relationshipResult.rows[0].idusuario;
+
+            // Busca dados do usuário acompanhado
+            const companionData = await db.query(
+                'SELECT name FROM banco.usuarios WHERE idusuarios = $1',
+                [companionId]
+            );
+
+            const activities = await db.query(
+                'SELECT * FROM banco.activity WHERE idusuario = $1',
+                [companionId]
+            );
+
+            return res.status(200).send({
+                type: 'accompanist',
+                companion: companionData.rows[0],
+                activities: activities.rows,
+            });
+        } else {
+            // Usuário normal, retornar suas atividades
+            const activities = await db.query(
+                'SELECT * FROM banco.activity WHERE idusuario = $1',
+                [userId]
+            );
+
+            return res.status(200).send({type: 'normal', activities: activities.rows,});
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: 'Error fetching home data'});
+    }
+});
+
 app.post("/new-activity", authenticateToken, async (req, res) => {
     const activityName = req.body.activityName;
     const priority = req.body.priority;
@@ -498,6 +558,84 @@ app.put('/user-companion/delete', authenticateToken, async (req, res) => {
         return res.status(500).send({ success: false, message: 'Erro ao remover acompanhante.' });
     }
 });
+
+app.post('/reactions', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+    const { activity_id, reaction_type } = req.body;
+
+    try {
+        // Verifica se o usuário já reagiu à atividade
+        const existingReaction = await db.query(
+            'SELECT * FROM banco.reactions WHERE activity_id = $1 AND user_id = $2 AND reaction_type = $3',
+            [activity_id, userId, reaction_type]
+        );
+
+        if (existingReaction.rows.length > 0) {
+            // Remove a reação existente
+            await db.query(
+                'DELETE FROM banco.reactions WHERE activity_id = $1 AND user_id = $2 AND reaction_type = $3',
+                [activity_id, userId, reaction_type]
+            );
+            return res.status(200).send({ message: 'Reaction removed successfully' });
+        } else {
+            // Verifica se o usuário reagiu com outro tipo de reação
+            const otherReaction = await db.query(
+                'SELECT * FROM banco.reactions WHERE activity_id = $1 AND user_id = $2',
+                [activity_id, userId]
+            );
+
+            if (otherReaction.rows.length > 0) {
+                // Atualiza a reação para o novo tipo
+                await db.query(
+                    'UPDATE banco.reactions SET reaction_type = $1 WHERE activity_id = $2 AND user_id = $3',
+                    [reaction_type, activity_id, userId]
+                );
+                return res.status(200).send({ message: 'Reaction updated successfully' });
+            } else {
+                // Adiciona uma nova reação
+                await db.query(
+                    'INSERT INTO banco.reactions (activity_id, user_id, reaction_type) VALUES ($1, $2, $3)',
+                    [activity_id, userId, reaction_type]
+                );
+                return res.status(201).send({ message: 'Reaction added successfully' });
+            }
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: 'Error handling reaction' });
+    }
+});
+
+app.get('/reactions', async (req, res) => {
+
+    try {
+        const result = await db.query(`
+            SELECT 
+                activity_id,
+                SUM(CASE WHEN reaction_type = 'conquest' THEN 1 ELSE 0 END) AS conquest,
+                SUM(CASE WHEN reaction_type = 'intime' THEN 1 ELSE 0 END) AS intime,
+                SUM(CASE WHEN reaction_type = 'sad' THEN 1 ELSE 0 END) AS sad
+            FROM banco.reactions
+            GROUP BY activity_id;
+        `);
+
+        const reactions = result.rows;
+
+        const groupedReactions = reactions.reduce((acc, reaction) => {
+            acc[reaction.activity_id] = {
+              conquest: reaction.conquest || 0,
+              intime: reaction.intime || 0,
+              sad: reaction.sad || 0,
+            };
+            return acc;
+        }, {});
+
+        res.status(200).json(groupedReactions);
+    } catch (error) {
+        console.error("Erro ao buscar reações agrupadas:", error);
+        res.status(500).json({ error: "Error ao buscar reações agrupadas." });
+    }
+});  
 
 app.put('/change-password', authenticateToken, async (req, res) => {
     const userId = req.user.userId;

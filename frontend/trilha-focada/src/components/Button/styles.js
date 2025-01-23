@@ -81,6 +81,18 @@ export const Container = styled.button.attrs((props) => ({
     width: auto;
   }
 
+  &.reactions {
+    width: 40px; /* Define largura menor */
+    height: 40px; /* Define altura igual à largura */
+    padding: 0; /* Remove o padding */
+    border-radius: 50%; /* Botão redondo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.2rem; /* Ajusta o tamanho da fonte */
+    gap: 0; /* Remove espaço extra */
+  }
+
   &.invite {
     padding: 0px 0px;
     font-size: 17px;

@@ -203,23 +203,86 @@ export const ListFeed = styled.ul`
     width: 100%;
     padding: 0.5rem 1rem;
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: grid;
+    grid-template-areas:
+      "content buttons"
+      "reactions buttons";
+    grid-template-columns: 3fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1rem;
 
     background-color: ${({ theme }) => theme.COLORS.BLUE_LIGHT};
     border-radius: 0.625rem;
 
-    > div {
+    > .content {
+      grid-area: content;
+      display: grid;
+      grid-template-columns: 0.40fr 3.60fr;
+      gap: 1.625rem;
+      margin-left: 10px;
+
+      > div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+        color: ${({ theme }) => theme.COLORS.WHITE};
+
+        > span {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 1.5rem;
+        }
+
+        > p {
+          height: 5px;
+          font-size: 1.25rem;
+          color: ${({ theme }) => theme.COLORS.WHITE};
+        }
+      }
+    }
+
+    > .reactions {
+      grid-area: reactions;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 0.625rem;
+      gap: 1rem;
+      justify-content: flex-start;
+      margin-bottom: 10px;
+      margin-left: 5px;
 
-      > p {
-        font-size: 1.25rem;
+      > span {
+        margin-left: -5px;
+        font-size: 1.5rem;
         color: ${({ theme }) => theme.COLORS.WHITE};
       }
+    }
+
+    > div:nth-child(2) {
+      grid-area: buttons;
+      display: flex;
+      flex-direction: row; /* Alinha os botões lado a lado */
+      align-items: center;
+      justify-content: center;
+      gap: 0.625rem; /* Espaço entre os botões */
+      margin-right: 20px;
+
+      > button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .content p.title {
+      font-size: 1.7rem;
+      font-weight: bold;
+    }
+
+    .content p.subtitle {
+      margin: 0;
+      font-size: 1.2rem;
+      align-self: flex-start;
     }
   }
 `

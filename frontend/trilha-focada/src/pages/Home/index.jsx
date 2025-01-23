@@ -7,12 +7,13 @@ import { Button } from '../../components/Button'
 import { Header } from '../../components/Header'
 import { CalendarSection, Container, LeftColumn, RightColumn, ListFeed, FormList } from './styles';
 import { AiOutlinePlusCircle } from "react-icons/ai";
-import { FcStatistics } from "react-icons/fc";
-import { RiDeleteBin5Line, RiEdit2Line, RiFilter2Fill, RiFilter2Line, RiCheckLine } from "react-icons/ri"
+import { RiDeleteBin5Line, RiEdit2Line, RiFilter2Fill, RiFilter2Line, RiCheckLine, RiTimerFlashLine } from "react-icons/ri"
+import { LiaTrophySolid } from "react-icons/lia";
 import { MdPersonAdd } from "react-icons/md";
-import { PiUserCircleDuotone } from "react-icons/pi";
+import { PiUserCircleDuotone, PiSmileySad } from "react-icons/pi";
 import { FaWhatsapp } from "react-icons/fa";
 import { ImProfile } from "react-icons/im";
+import { TbCircleNumber1Filled, TbCircleNumber2Filled, TbCircleNumber3Filled  } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { Menu } from '../../components/Menu';
 import { DashboardChart } from '../../components/DashboardChart';
@@ -25,6 +26,9 @@ export function Home() {
     const [activities, setActivities] = useState([]);
     const [filterType, setFilterType] = useState("date");
     const [companion, setCompanion] = useState(null);
+    const [reactions, setReactions] = useState({conquest: 0, intime: 0, sad: 0,});
+    const [allReactions, setAllReactions] = useState({});
+
     const token = localStorage.getItem("token");
 
     const handleHeaderHeightChange = (height) => {
@@ -32,10 +36,6 @@ export function Home() {
     }
 
     const navigate = useNavigate()
-
-    function handleDashboard() {
-      navigate("/dashboard")
-    }
 
     function handleNewAcitivity() {
         navigate("/new-activity")
@@ -116,6 +116,38 @@ export function Home() {
       return activities;
     };
   
+    const handleReactionClick = (reactionType, activityId) => {
+
+      Axios.post('http://localhost:3001/reactions',  {
+        activity_id: activityId,
+        reaction_type: reactionType,
+      }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+      }).then((response) => {
+          setReactions((prevReactions) => ({
+            ...prevReactions,
+            [reactionType]: prevReactions[reactionType] + 1,
+          }));
+      }).catch((error) => {
+          console.error("Erro ao cadastrar atividade:", error);
+      });
+    };
+
+    useEffect(() => {
+      Axios.get('http://localhost:3001/reactions', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => {
+          setAllReactions(response.data);
+        })
+        .catch((error) => {
+          console.error("Erro ao carregar todas as reações:", error);
+        });
+    }, [token]);
 
     useEffect(() => {
       Axios.get("http://localhost:3001/days-activities", {
@@ -210,28 +242,20 @@ export function Home() {
                   <ListFeed>
                     {getFilteredActivities().map((activity, index) => (
                       <li key={index}>
-                        <div>
-                          <span
-                            style={activity.priority === 1 ? {
-                              backgroundColor: `#B60000`,
-                              width: "20px",
-                              height: "20px",
-                              borderRadius: "50%",
-                            } : activity.priority === 2 ? {
-                              backgroundColor: `#08487C`,
-                              width: "20px",
-                              height: "20px",
-                              borderRadius: "50%",
-                            } : {
-                              backgroundColor: `#158038`,
-                              width: "20px",
-                              height: "20px",
-                              borderRadius: "50%",
-                            }}
-                          ></span>
-                          <p>| {activity.activity_name} |</p>
-                          <p>| Prioridade: {activity.priority} |</p>
-                          <p>| Início: {activity.start_time} |</p>
+                        <div className='content'>
+                            <span>
+                              {activity.priority === 1 ? (
+                                <TbCircleNumber1Filled  style={{ backgroundColor: '#FDFDFD', borderRadius: '50%', color: `#B60000`, width: "40px", height: "40px" }} />
+                              ) : activity.priority === 2 ? (
+                                <TbCircleNumber2Filled   style={{ backgroundColor: '#FDFDFD', borderRadius: '50%', color: `#e6d816`, width: "40px", height: "40px" }} />
+                              ) : (
+                                <TbCircleNumber3Filled  style={{ backgroundColor: '#FDFDFD', borderRadius: '50%', color: `#158038`, width: "40px", height: "40px" }} />
+                              )}
+                            </span>
+                          <div>
+                            <p className='title'>{activity.activity_name}</p>
+                            <p className='subtitle'> Horário: {activity.start_time} </p>
+                          </div>
                         </div>
 
                         <div>
@@ -250,6 +274,29 @@ export function Home() {
                             className="inline-button"
                             onClick={() => handleDelete(activity.idactivity)}
                           />
+                        </div>
+
+                        <div className="reactions">
+                          <Button
+                            icon={LiaTrophySolid}
+                            className="reactions"
+                            onClick={() => handleReactionClick('conquest', activity.idactivity)}
+                          />
+                          <span>{allReactions[activity.idactivity]?.conquest || 0}</span>
+
+                          <Button
+                            icon={RiTimerFlashLine }
+                            className="reactions"
+                            onClick={() => handleReactionClick('intime', activity.idactivity)}
+                          />
+                          <span>{allReactions[activity.idactivity]?.intime || 0}</span>
+
+                          <Button
+                            icon={PiSmileySad}
+                            className="reactions"
+                            onClick={() => handleReactionClick('sad', activity.idactivity)}
+                          />
+                          <span>{allReactions[activity.idactivity]?.sad || 0}</span>
                         </div>
                       </li>
                     ))}
