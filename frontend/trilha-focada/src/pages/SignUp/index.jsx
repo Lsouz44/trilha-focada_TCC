@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom"
 import * as yup from 'yup';
 import Axios from 'axios';
 
-import { Container, Title, Form, FormGroup, FormField, FormError } from './styles';
+import { Container, Title, Form, FormGroup, FormField, FormError, Img, Label, SelectWrapper, OptionsContainer, Info } from './styles';
 import { Button } from '../../components/Button';
 import React from 'react';
+import logo from '../../assets/logo/logo_trilhafocada_semslogan_black.png'
 
 
 export function SignUp() {
@@ -14,6 +15,10 @@ export function SignUp() {
 
   function handleHome() {
     navigate("/login")
+  }
+
+  function handleBack() {
+    navigate("/")
   }
 
   const handleClickRegister = (values) => {
@@ -52,6 +57,13 @@ export function SignUp() {
   
   return (
       <Container>
+
+      <Img 
+          src={logo} 
+          alt="Logo Trilha Focada" 
+          className="logo-top" 
+      />
+  
       <Title>Crie sua conta</Title>
       <Formik
           initialValues={{ name: "", type: "", email: "", password: "", confirmPassword: "" }}
@@ -62,9 +74,9 @@ export function SignUp() {
           <Form>
           
           <FormGroup>
-
+              <Label htmlFor='name'>Nome: </Label>
               <FormField name="name"
-              placeholder="Nome"
+              placeholder="Ex: João Carlos"
               onChange={handleChange}
               value={values.name} />
 
@@ -74,17 +86,19 @@ export function SignUp() {
           </FormGroup>
           
           <FormGroup>
-                
-                <FormField as="select"
-                name="type"
-                onChange={handleChange}
-                value={values.type}>
+                <Label htmlFor='type-user'>Tipo de usuário: </Label>
+                <SelectWrapper>
+                  <FormField as="select"
+                    name="type"
+                    onChange={handleChange}
+                    value={values.type}>
 
-                  <option value="" label="Selecione o tipo de usuário" />
-                  <option value="1" label="Trilheiro" />
-                  <option value="2" label="Guia" />
+                      <option value="" label="" />
+                      <option value="1" label="Trilheiro" />
+                      <option value="2" label="Guia" />
 
-                </FormField>
+                  </FormField>
+                </SelectWrapper>
 
                 <FormError component="span"
                 name="type" />
@@ -92,9 +106,9 @@ export function SignUp() {
           </FormGroup>
           
           <FormGroup>
-
+              <Label htmlFor='email'>Email: </Label>
               <FormField name="email"
-              placeholder="Email"
+              placeholder="exemplo@email.com"
               onChange={handleChange}
               value={values.email} />
 
@@ -104,10 +118,9 @@ export function SignUp() {
           </FormGroup>
 
           <FormGroup>
-
+              <Label htmlFor='password'>Senha: </Label>
               <FormField name="password"
               type="password"
-              placeholder="Senha"
               onChange={handleChange}
               value={values.password} />
 
@@ -117,10 +130,9 @@ export function SignUp() {
           </FormGroup>
 
           <FormGroup>
-
+              <Label htmlFor='confirmed-password'>Confirmar senha: </Label>
               <FormField name="confirmPassword"
               type="password"
-              placeholder="Confirme sua senha"
               onChange={handleChange}
               value={values.confirmPassword} />
 
@@ -129,9 +141,25 @@ export function SignUp() {
               
           </FormGroup>
 
-          <Button title="Cadastrar"
+          <OptionsContainer>
+            <Info>
+              <input type="checkbox" id="newsletter" />
+              <span>Aceito receber notificações e publicidade pelo email.</span>
+            </Info>
+
+            <Info>
+              <input type="checkbox" id="term" />
+              <span>Ao preencher o formulario acima voce concorda com nossos Termos de uso e nossa Política de Privacidade.</span>
+            </Info>
+          </OptionsContainer>
+
+          <Button title="Criar conta"
           className="login-button"
           type="submit" $opacity />
+
+          <Button title="Voltar"
+          className="login-button"
+          onClick={handleBack} $opacity />
           
           </Form>
           )}

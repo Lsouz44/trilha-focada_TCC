@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom"
 import * as yup from 'yup';
 import Axios from 'axios';
 
-import { Container, Title, Form, FormGroup, FormField, FormError, Label } from './styles';
+import { Container, Title, Form, FormGroup, FormField, FormError, Label, Img, OptionsContainer, RememberMe, ForgotPassword } from './styles';
 import { Button } from '../../components/Button';
+import logo from '../../assets/logo/logo_trilhafocada_semslogan_black.png'
 
 export function SignIn() {
 
@@ -12,6 +13,10 @@ export function SignIn() {
 
         function handleHome() {
             navigate("/home")
+        }
+
+        function handleSingUp() {
+          navigate("/register")
         }
 
         function handleClickLogin(values){
@@ -42,7 +47,15 @@ export function SignIn() {
         });
 
     return (
+
         <Container>
+
+            <Img 
+                src={logo} 
+                alt="Logo Trilha Focada" 
+                className="logo-top" 
+            />
+
             <Title>Login</Title>
             <Formik
             initialValues={{}}
@@ -75,6 +88,24 @@ export function SignIn() {
                 <Button title="Login"
                 className="login-button"
                 type="submit" $opacity />
+
+                <OptionsContainer>
+                  <RememberMe>
+                    <input type="checkbox" id="remember" />
+                    Lembrar de mim
+                  </RememberMe>
+                  <ForgotPassword href="/">Esqueceu sua senha?</ForgotPassword>
+                </OptionsContainer>
+
+                <hr></hr>
+
+                <Form>
+                  <label>Não tem uma conta?</label>
+                </Form>
+
+                <Button title="Criar conta"
+                className="singup-button"
+                onClick={handleSingUp} $opacity />
     
             </Form>
     

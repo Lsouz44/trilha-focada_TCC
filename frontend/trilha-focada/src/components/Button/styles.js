@@ -4,7 +4,6 @@ export const Container = styled.button.attrs((props) => ({
   className: props.className,
 }))`
   width: 100%;
-  padding: 0.9375rem 5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -41,10 +40,23 @@ export const Container = styled.button.attrs((props) => ({
     cursor: not-allowed;
   }
 
+  &.welcome-login-button {
+  max-height: 3.8rem;
+  padding: 0.9rem 5rem;
+  margin-bottom: 1.2rem;
+  }
+
   &.login-button {
   max-height: 40px;
+  max-width: 220px;
   margin-top: 20px;
-  padding: 5px 40px;
+  }
+
+  &.singup-button {
+  max-height: 40px;
+  max-width: 220px;
+  margin-top: 2px;
+  margin-bottom: 10px;
   }
 
   &.newactivity-button {

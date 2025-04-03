@@ -2,40 +2,80 @@ import styled from 'styled-components';
 import { Form as FormikForm, Field as FormikField, ErrorMessage as FormikErrorMessage } from 'formik';
 
 export const Container = styled.div`
-  width: 200px;
+  width: 350px;
   height: max-content;
   margin: auto;
   background-color: ${({ theme }) => theme.COLORS.WHITE};
   padding: 20px 15px;
-  margin-top: 120px;
+  margin-top: 150px;
   border-radius: 7px;
   font-family: 'Baloo Bhai 2', serif;
-  box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
 `;
+
+export const Img = styled.img`
+  position: absolute;
+  height: 100px;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+`
 
 export const Title = styled.h1`
   margin: 0;
   text-align: center;
-  margin-top: 10px;
+  margin-top: 0.2rem;
+  font-weight: 500;
+  font-size: 25px;
 `;
 
 export const Form = styled(FormikForm)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 5px;
+
+  > label {
+    margin-top: 5px;
+    font-size: 14px;
+    align-self: center;
+  }
+
+  > hr {
+    margin-top: 20px;
+    width: 70%;
+    border: 0.1px solid #dedede;
+    border-radius: 50%;
+  }
 `;
 
 export const FormGroup = styled.div`
-  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 220px; 
+  margin: 0 auto;
 `;
 
 export const FormField = styled(FormikField)`
-  display: inline-block;
+  width: 95%;
   padding: 5px;
+  border: 1px solid #dedede;
+  border-radius: 8px;
+  box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.1);
+  outline: none;
+
+  &:focus {
+    border-color: #aaa;
+  }
 `;
 
 export const Label = styled.label`
   font-size: 18px;
   font-weight: 500;
   color: ${({ theme }) => theme.COLORS.BLACK};
+  margin-bottom: 5px;
 `;
 
 export const FormError = styled(FormikErrorMessage)`
@@ -43,4 +83,63 @@ export const FormError = styled(FormikErrorMessage)`
   color: ${({ theme }) => theme.COLORS.RED};
   font-size: 0.9em;
   font-weight: 400;
+`;
+
+export const OptionsContainer = styled.div`
+  display: flex;
+  justify-content: space-between; /* Distribui os elementos */
+  align-items: center; /* Alinha verticalmente */
+  width: 100%;
+  max-width: 220px; /* Mesmo tamanho do input para alinhamento */
+  margin-top: 10px;
+`;
+
+export const RememberMe = styled.label`
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  color: ${({ theme }) => theme.COLORS.BLACK};
+  
+  > input {
+    appearance: none; /* Remove o estilo padrão do navegador */
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc; /* Borda cinza claro */
+    border-radius: 4px; /* Deixa a caixinha arredondada */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    cursor: pointer;
+    margin-right: 5px;
+    background-color: white;
+    transition: all 0.2s ease-in-out;
+
+    &:checked {
+      background-color: #007bff; /* Azul quando selecionado */
+      border-color: #007bff;
+      position: relative;
+    }
+
+    &:checked::after {
+      content: '✔';
+      font-size: 12px;
+      color: white;
+      font-weight: bold;
+      display: block;
+      text-align: center;
+      line-height: 14px;
+    }
+  }
+`;
+
+export const ForgotPassword = styled.a`
+  font-size: 11px;
+  color: ${({ theme }) => theme.COLORS.PRIMARY};
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
